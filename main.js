@@ -3,9 +3,11 @@ const mongoose = require('mongoose');
 const path = require('path');
 const session = require('express-session');
 const { log } = require('console');
+const http = require('http');
+const WebSocket = require('ws');
 
 const app = express();
-const port = 3001;
+const port = process.env.PORT || 3001; // Use environment variable or default to 3001
 
 // MongoDB connection
 mongoose.connect('mongodb://localhost:27017/Anything&Anywhere')
@@ -14,9 +16,34 @@ mongoose.connect('mongodb://localhost:27017/Anything&Anywhere')
 })
 .catch(()=>{
   console.log('failed to connected');
-})
+});
 
-app.listen(port, () => {
+// Create HTTP server
+const server = http.createServer(app);
+
+// WebSocket server
+const wss = new WebSocket.Server({ server });
+
+wss.on('connection', (ws) => {
+  console.log('Client connected');
+
+  ws.on('message', (message) => {
+    console.log(`Received: ${message}`);
+    // Broadcast the message to all clients
+    wss.clients.forEach(client => {
+      if (client.readyState === WebSocket.OPEN) {
+        client.send(message);
+      }
+    });
+  });
+
+  ws.on('close', () => {
+    console.log('Client disconnected');
+  });
+});
+
+// Start servr
+server.listen(port, () => {
   console.log(`Server running at http://localhost:${port}`);
 });
 
@@ -37,9 +64,10 @@ const addressSchema = new Schema({
   street_number: String,
   address_line1: String,
   address_line2: String,
-  city: String,
   postal_code: String,
   country: String,
+}, {
+  collection: 'user_address',
 });
 
 const productSchema = new Schema({
@@ -169,7 +197,15 @@ app.post('/register', async (req, res) => {
     res.status(500).json({ message: 'Error registering user', error: err.message });
   }
 });
-
+// Endpoint to get session info
+app.get('/api/session', (req, res) => {
+  console.log('Session User ID:', req.session.userId); // Debugging statement
+  if (req.session.userId) {
+    res.json({ userId: req.session.userId });
+  } else {
+    res.status(401).json({ message: 'Not authenticated' });
+  }
+});
 
 // Shopping Cart Checkout, Quantity & Deletion
 // Add to cart function
@@ -220,6 +256,21 @@ app.get('/api/shopping_cart', isAuthenticated, async (req, res) => {
     res.json(cartItems);
   } catch (err) {
     res.status(500).json({ error: err.message });
+  }
+});
+
+// Checkout Page
+// Fetch user address, rendering
+app.get('/api/user_address', isAuthenticated, async (req, res) => {
+  try {
+    const address = await Address.findOne({ user_id: req.session.userId });
+    if (address) {
+      res.json(address);
+    } else {
+      res.status(404).json({ message: 'Address not found' });
+    }
+  } catch (err) {
+    res.status(500).json({ message: 'Error fetching user address', error: err.message });
   }
 });
 

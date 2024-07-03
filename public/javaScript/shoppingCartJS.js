@@ -114,4 +114,9 @@ function updateCartSummary() {
     document.querySelector('.cart-summary-total').firstElementChild.textContent = `Total (${totalItems} items): $${totalPrice.toFixed(2)}`;
 }
 
+const checkoutButton = document.querySelector('.checkout-button');
+checkoutButton.addEventListener('click', () => {
+  window.location.href = 'checkoutPage.html'; // Redirect to checkout page
+});
+
 document.addEventListener('DOMContentLoaded', getCartItems);
