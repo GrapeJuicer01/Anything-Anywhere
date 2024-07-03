@@ -88,18 +88,21 @@ const shopSchema = new Schema({
 
 const orderSchema = new Schema({
   user_id: Schema.Types.ObjectId,
-  order_date: Date,
-  order_time: Date,
+  order_date: { type: Date, default: Date.now },
   payment_method: String,
   shipping_address: Schema.Types.ObjectId,
   order_status: String,
+  orderItems: [{ type: Schema.Types.ObjectId, ref: 'OrderItem' }]
 });
 
 const orderItemSchema = new Schema({
+  user_id: Schema.Types.ObjectId,
   order_id: Schema.Types.ObjectId,
   product_id: Schema.Types.ObjectId,
   quantity: Number,
   price: Number,
+}, {
+  collection: 'orderitems',
 });
 
 const reviewSchema = new Schema({
@@ -273,6 +276,83 @@ app.get('/api/user_address', isAuthenticated, async (req, res) => {
     res.status(500).json({ message: 'Error fetching user address', error: err.message });
   }
 });
+// Place order
+app.post('/api/orders', isAuthenticated, async (req, res) => {
+  try {
+    const { payment_method, shipping_address, orderItems } = req.body;
+
+    const cartItems = await Cart.find({ user_id: req.session.userId }).populate('product_id');
+    if (cartItems.length === 0) {
+      return res.status(400).json({ message: 'Cart is empty' });
+    }
+
+    const address = new Address({
+      user_id: req.session.userId,
+      unit_number: shipping_address.unit_number,
+      street_number: shipping_address.street_number,
+      address_line1: shipping_address.address_line1,
+      address_line2: shipping_address.address_line2,
+      city: shipping_address.city,
+      postal_code: shipping_address.postal_code,
+      country: shipping_address.country,
+    });
+    await address.save();
+
+    const order = new Order({
+      user_id: req.session.userId,
+      order_date: new Date(),
+      payment_method,
+      shipping_address: address._id,
+      order_status: 'Pending'
+    });
+
+    await order.save();
+
+    const orderItemsData = cartItems.map(item => ({
+      user_id: req.session.userId,
+      order_id: order._id,
+      product_id: item.product_id._id,
+      quantity: item.quantity,
+      price: item.product_id.price,
+    }));
+
+    const createdOrderItems = await OrderItem.insertMany(orderItemsData);
+    order.orderItems = createdOrderItems.map(item => item._id);
+    await order.save();
+
+    // Clear the cart
+    await Cart.deleteMany({ user_id: req.session.userId });
+
+    res.status(201).json({ message: 'Order placed successfully', orderId: order._id });
+  } catch (err) {
+    console.error('Error placing order:', err);
+    res.status(500).json({ message: 'Error placing order', error: err.message });
+  }
+});
+
+// Pending Order Page
+// Fetch orders, rendering
+app.get('/api/orders', isAuthenticated, async (req, res) => {
+  try {
+    const orders = await Order.find({ user_id: req.session.userId })
+      .populate('shipping_address')
+      .populate({
+        path: 'orderItems',
+        populate: {
+          path: 'product_id',
+          model: 'Product'
+        }
+      });
+
+    console.log('Fetched orders:', orders);
+
+    res.json(orders);
+  } catch (err) {
+    console.error('Error fetching orders:', err);
+    res.status(500).json({ message: 'Error fetching orders', error: err.message });
+  }
+});
+
 
 // Bee Cheng Hiang Store Page Functions
 // Render product from products collection

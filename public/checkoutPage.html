@@ -34,6 +34,9 @@
         <div id="delivery-address">
         <!-- Address will be rendered here-->  
         </div>
+        <div>
+            <input type="checkbox" id="confirm-address"> Confirm Delivery Address
+        </div>
     </div>
 
     <div class="checkout-container">
@@ -42,6 +45,14 @@
             <!-- Cart items will be rendered here -->
         </div>
         <div class="cart-summary">
+            <div>
+                <label for="payment-method">Payment Method:</label>
+                <select id="payment-method">
+                    <option value="Credit Card">Credit Card</option>
+                    <option value="PayPal">PayPal</option>
+                    <option value="Bank Transfer">Bank Transfer</option>
+                </select>
+            </div>
             <p>Shipping Total: $<span id="shipping-total">1.99</span></p>
             <p>TOTAL PRICE: $<span id="total-price">0.00</span></p>
             <button class="checkout-button" onclick="placeOrder()">Place Order</button>

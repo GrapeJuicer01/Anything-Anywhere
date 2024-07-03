@@ -8,7 +8,7 @@ Click nbfs://nbhost/SystemFileSystem/Templates/JSP_Servlet/Html.html to edit thi
         <title>TODO supply a title</title>
         <meta charset="UTF-8">
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
-        <link rel="stylesheet" href="css/user_dashboardCss.css">
+        <link rel="stylesheet" href="css/pendingOrderCss.css">
     </head>
     <body>
         <nav class="navbar">
@@ -33,34 +33,21 @@ Click nbfs://nbhost/SystemFileSystem/Templates/JSP_Servlet/Html.html to edit thi
                 <p>Welcome back, "user"</p>
                 <ul>
                     <li><a href="#"><i class="icon-user"></i> My Account</a></li>
-                    <li><a href="#" class="active">Profile</a></li>
+                    <li><a href="user_dashboard.html">Profile</a></li>
                     <li><a href="#">Banks & Cards</a></li>
                     <li><a href="#">Address</a></li>
                     <li><a href="#">Change Password</a></li>
                     <li><a href="#">Privacy Settings</a></li>
-                    <li><a href="#"><i class="icon-purchase"></i> Pending Order</a></li>
+                    <li><a href="#" class="active"></i> Pending Order</a></li>
                     <li><a href="#"><i class="icon-purchase"></i> Order History</a></li>
                     <li><a href="#"><i class="icon-vouchers"></i> My Vouchers</a></li>
                 </ul>
             </div>
-            <div class="main-content">
-                <h2>Dashboard</h2>
-                <form>
-                    <label for="username">Username</label>
-                    <input type="text" id="username" name="username">
-
-                    <label for="name">Name</label>
-                    <input type="text" id="name" name="name">
-
-                    <label for="email">Email</label>
-                    <input type="email" id="email" name="email">
-
-                    <label for="phone">Phone Number</label>
-                    <input type="text" id="phone" name="phone">
-
-                    <label for="dob">Date of Birth</label>
-                    <input type="date" id="dob" name="dob">
-                </form>
+            <div class="pending-order container">
+                <h2>Pending Order</h2>
+                <div id="pending-order">
+                    <!-- pending order render here-->
+                </div>
             </div>
         </div>
         <footer class="footer">
@@ -115,5 +102,6 @@ Click nbfs://nbhost/SystemFileSystem/Templates/JSP_Servlet/Html.html to edit thi
                 </div>
             </div>
         </footer>
+        <script src="javaScript/pendingOrderJS.js"></script>
     </body>
 </html>
