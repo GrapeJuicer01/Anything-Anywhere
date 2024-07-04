@@ -1,0 +1,28 @@
+[{
+  "_id": {
+    "$oid": "667ac086cc5c6023dacc89a6"
+  },
+  "user_id": {
+    "$oid": "667ac086cc5c6023dacc89a4"
+  },
+  "payment_type_id": 1,
+  "provider": "Visa",
+  "card_number": "4111111111111111",
+  "expiry_date": {
+    "$date": "2025-12-31T00:00:00.000Z"
+  }
+},
+{
+  "_id": {
+    "$oid": "667ac086cc5c6023dacc89a7"
+  },
+  "user_id": {
+    "$oid": "667ac086cc5c6023dacc89a5"
+  },
+  "payment_type_id": 2,
+  "provider": "Mastercard",
+  "card_number": "5500000000000004",
+  "expiry_date": {
+    "$date": "2024-11-30T00:00:00.000Z"
+  }
+}]

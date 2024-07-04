@@ -1,0 +1,26 @@
+[{
+  "_id": {
+    "$oid": "667ac07fcc5c6023dacc89a2"
+  },
+  "user_id": {
+    "$oid": "667ac07fcc5c6023dacc899e"
+  },
+  "order_id": {
+    "$oid": "667ac07fcc5c6023dacc899f"
+  },
+  "ratings": 5,
+  "comment": "Excellent product!"
+},
+{
+  "_id": {
+    "$oid": "667ac07fcc5c6023dacc89a3"
+  },
+  "user_id": {
+    "$oid": "667ac07fcc5c6023dacc89a0"
+  },
+  "order_id": {
+    "$oid": "667ac07fcc5c6023dacc89a1"
+  },
+  "ratings": 4,
+  "comment": "Very good!"
+}]

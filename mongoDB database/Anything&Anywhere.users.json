@@ -1,0 +1,26 @@
+[{
+  "_id": {
+    "$oid": "667abe6fcc5c6023dacc8990"
+  },
+  "email": "user1@example.com",
+  "password": "password1",
+  "dob": {
+    "$date": "2024-07-04T00:00:00.000Z"
+  },
+  "name": "user chua",
+  "phone": "90765567",
+  "username": "user1"
+},
+{
+  "_id": {
+    "$oid": "667abe6fcc5c6023dacc8991"
+  },
+  "email": "user3@example.com",
+  "password": "password2",
+  "dob": {
+    "$date": "2024-07-10T00:00:00.000Z"
+  },
+  "name": "user jon",
+  "phone": "87723456",
+  "username": "user2"
+}]

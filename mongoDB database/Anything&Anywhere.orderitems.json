@@ -1,0 +1,68 @@
+[{
+  "_id": {
+    "$oid": "66862449263f760f0a51acd0"
+  },
+  "user_id": {
+    "$oid": "667abe6fcc5c6023dacc8990"
+  },
+  "order_id": {
+    "$oid": "66862449263f760f0a51acce"
+  },
+  "product_id": {
+    "$oid": "667ac060cc5c6023dacc8992"
+  },
+  "quantity": 1,
+  "price": 22.2,
+  "__v": 0
+},
+{
+  "_id": {
+    "$oid": "66862449263f760f0a51acd1"
+  },
+  "user_id": {
+    "$oid": "667abe6fcc5c6023dacc8990"
+  },
+  "order_id": {
+    "$oid": "66862449263f760f0a51acce"
+  },
+  "product_id": {
+    "$oid": "667ac060cc5c6023dacc8993"
+  },
+  "quantity": 1,
+  "price": 21.6,
+  "__v": 0
+},
+{
+  "_id": {
+    "$oid": "66868fed4234dc178abb368e"
+  },
+  "user_id": {
+    "$oid": "667abe6fcc5c6023dacc8991"
+  },
+  "order_id": {
+    "$oid": "66868fed4234dc178abb368c"
+  },
+  "product_id": {
+    "$oid": "667ac060cc5c6023dacc8992"
+  },
+  "quantity": 1,
+  "price": 22.2,
+  "__v": 0
+},
+{
+  "_id": {
+    "$oid": "66868fed4234dc178abb368f"
+  },
+  "user_id": {
+    "$oid": "667abe6fcc5c6023dacc8991"
+  },
+  "order_id": {
+    "$oid": "66868fed4234dc178abb368c"
+  },
+  "product_id": {
+    "$oid": "667ac060cc5c6023dacc8993"
+  },
+  "quantity": 1,
+  "price": 21.6,
+  "__v": 0
+}]

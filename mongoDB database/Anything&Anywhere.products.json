@@ -1,0 +1,48 @@
+[{
+  "_id": {
+    "$oid": "667ac060cc5c6023dacc8992"
+  },
+  "name": "Sliced Pork Bak Kwa",
+  "description": "Delicious sliced pork",
+  "price": 22.2,
+  "quantity": 100,
+  "category": "Food",
+  "image": "store image/bee cheng hiang products/Sliced Pork Bak Kwa Image.jpg\"",
+  "shopId": 1
+},
+{
+  "_id": {
+    "$oid": "667ac060cc5c6023dacc8993"
+  },
+  "name": "Minced Pork Bak Kwa",
+  "description": "Tasty minced pork",
+  "price": 21.6,
+  "quantity": 150,
+  "category": "Food",
+  "image": "store image/bee cheng hiang products/Minced Pork Bak Kwa Image.jpg",
+  "shopId": 1
+},
+{
+  "_id": {
+    "$oid": "667adb3084b12f85e9cc8988"
+  },
+  "name": "Prime Bak Kwa",
+  "description": "Delicious sliced pork",
+  "price": 25.2,
+  "quantity": 100,
+  "category": "Food",
+  "image": "store image/bee cheng hiang products/Prime Bak Kwa Image.jpg",
+  "shopId": 1
+},
+{
+  "_id": {
+    "$oid": "667adb3084b12f85e9cc8989"
+  },
+  "name": "Gourmet Fusion Bak Kwa",
+  "description": "Tasty minced pork",
+  "price": 26.1,
+  "quantity": 150,
+  "category": "Food",
+  "image": "store image/bee cheng hiang products/Gourmet Bak Kwa Image.jpg",
+  "shopId": 1
+}]

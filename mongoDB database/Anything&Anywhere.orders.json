@@ -1,0 +1,50 @@
+[{
+  "_id": {
+    "$oid": "66862449263f760f0a51acce"
+  },
+  "user_id": {
+    "$oid": "667abe6fcc5c6023dacc8990"
+  },
+  "order_date": {
+    "$date": "2024-07-04T04:25:45.736Z"
+  },
+  "payment_method": "Credit Card",
+  "shipping_address": {
+    "$oid": "66856254938852ee0de5395f"
+  },
+  "order_status": "Pending",
+  "orderItems": [
+    {
+      "$oid": "66862449263f760f0a51acd0"
+    },
+    {
+      "$oid": "66862449263f760f0a51acd1"
+    }
+  ],
+  "__v": 1
+},
+{
+  "_id": {
+    "$oid": "66868fed4234dc178abb368c"
+  },
+  "user_id": {
+    "$oid": "667abe6fcc5c6023dacc8991"
+  },
+  "order_date": {
+    "$date": "2024-07-04T12:05:01.886Z"
+  },
+  "payment_method": "Credit Card",
+  "shipping_address": {
+    "$oid": "66868fd15c55e2e3cd171c30"
+  },
+  "order_status": "Pending",
+  "orderItems": [
+    {
+      "$oid": "66868fed4234dc178abb368e"
+    },
+    {
+      "$oid": "66868fed4234dc178abb368f"
+    }
+  ],
+  "__v": 1
+}]

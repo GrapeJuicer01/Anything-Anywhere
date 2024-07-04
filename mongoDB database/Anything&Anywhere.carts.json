@@ -1,0 +1,26 @@
+[{
+  "_id": {
+    "$oid": "66855614d836586e630bac78"
+  },
+  "user_id": {
+    "$oid": "6684db5e80abe3782c807e67"
+  },
+  "product_id": {
+    "$oid": "667adb3084b12f85e9cc8988"
+  },
+  "quantity": 1,
+  "__v": 0
+},
+{
+  "_id": {
+    "$oid": "66855619d836586e630bac7f"
+  },
+  "user_id": {
+    "$oid": "6684db5e80abe3782c807e67"
+  },
+  "product_id": {
+    "$oid": "667ac060cc5c6023dacc8992"
+  },
+  "quantity": 1,
+  "__v": 0
+}]

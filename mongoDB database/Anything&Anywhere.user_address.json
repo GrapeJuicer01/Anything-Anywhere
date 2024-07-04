@@ -1,0 +1,30 @@
+[{
+  "_id": {
+    "$oid": "66856254938852ee0de5395f"
+  },
+  "user_id": {
+    "$oid": "667abe6fcc5c6023dacc8990"
+  },
+  "unit_number": "102",
+  "street_number": "37",
+  "address_line1": "Newton",
+  "address_line2": "Street",
+  "postal_code": "200600",
+  "country": "Singapore",
+  "__v": 0
+},
+{
+  "_id": {
+    "$oid": "66868fd15c55e2e3cd171c30"
+  },
+  "user_id": {
+    "$oid": "667abe6fcc5c6023dacc8991"
+  },
+  "__v": 0,
+  "address_line1": "Siglap",
+  "address_line2": "Drive",
+  "country": "Singapore",
+  "postal_code": "442356",
+  "street_number": "55",
+  "unit_number": "105"
+}]
