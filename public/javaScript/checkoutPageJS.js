@@ -79,21 +79,8 @@ async function placeOrder() {
       return;
     }
 
-    const confirmAddress = document.getElementById('confirm-address').checked;
-    if (!confirmAddress) {
-      alert('Please confirm your delivery address');
-      return;
-    }
-
-    const address = {
-      unit_number: document.getElementById('address-unit').innerText.split(',')[0].trim(),
-      street_number: document.getElementById('address-unit').innerText.split(',')[1].trim(),
-      address_line1: document.getElementById('address-line').innerText.split(' ')[0].trim(),
-      address_line2: document.getElementById('address-line').innerText.split(' ')[1].trim(),
-      city: document.getElementById('address-city').innerText.split(',')[0].trim(),
-      country: document.getElementById('address-city').innerText.split(',')[1].trim().split(' ')[0].trim(),
-      postal_code: document.getElementById('address-city').innerText.split(',')[1].trim().split(' ')[1].trim(),
-    };
+    const response = await fetch(`/api/user_address`);
+    const address = await response.json();
 
     const cartResponse = await fetch(`/api/shopping_cart`);
     const cartItems = await cartResponse.json();
@@ -104,21 +91,19 @@ async function placeOrder() {
       price: item.product_id.price
     }));
 
-    const paymentMethod = document.getElementById('payment-method').value;
-
     const orderResponse = await fetch('/api/orders', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({
-        payment_method: paymentMethod,
-        shipping_address: address,
+        payment_method: 'Credit Card', // or any method you are using
+        shipping_address_id: address._id,
         orderItems
       })
     });
 
     if (orderResponse.ok) {
       alert('Order placed successfully');
-      window.location.href = 'user_dashboard.html'; // Redirect to the user dashboard
+      window.location.href = 'pendingOrder.html'; // Redirect to the user dashboard
     } else {
       const errorData = await orderResponse.json();
       throw new Error(errorData.message);
@@ -127,6 +112,7 @@ async function placeOrder() {
     console.error('Error placing order:', error);
   }
 }
+
 
 document.addEventListener('DOMContentLoaded', async () => {
   const userId = await getSessionUserId();

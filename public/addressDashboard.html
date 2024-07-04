@@ -8,7 +8,7 @@ Click nbfs://nbhost/SystemFileSystem/Templates/JSP_Servlet/Html.html to edit thi
         <title>TODO supply a title</title>
         <meta charset="UTF-8">
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
-        <link rel="stylesheet" href="css/pendingOrderCss.css">
+        <link rel="stylesheet" href="css/addressDashboardCss.css">
     </head>
     <body>
         <nav class="navbar">
@@ -35,19 +35,36 @@ Click nbfs://nbhost/SystemFileSystem/Templates/JSP_Servlet/Html.html to edit thi
                     <li><a href="#"><i class="icon-user"></i> My Account</a></li>
                     <li><a href="user_dashboard.html">Profile</a></li>
                     <li><a href="#">Banks & Cards</a></li>
-                    <li><a href="addressDashboard.html">Address</a></li>
+                    <li><a href="#" class="active">Address</a></li>
                     <li><a href="#">Change Password</a></li>
                     <li><a href="#">Privacy Settings</a></li>
-                    <li><a href="#" class="active"></i> Pending Order</a></li>
+                    <li><a href="pendingOrder.html"><i class="icon-purchase"></i> Pending Order</a></li>
                     <li><a href="#"><i class="icon-purchase"></i> Order History</a></li>
                     <li><a href="#"><i class="icon-vouchers"></i> My Vouchers</a></li>
                 </ul>
             </div>
-            <div class="pending-order container">
-                <h2>Pending Order</h2>
-                <div id="pending-order">
-                    <!-- pending order render here-->
-                </div>
+            <div class="main-content">
+                <h2>Address</h2>
+                <form id="address-form">
+                    <label for="unit_number">Unit Number</label>
+                    <input type="text" id="unit_number" name="unit_number">
+    
+                    <label for="street_number">Street Number</label>
+                    <input type="text" id="street_number" name="street_number">
+    
+                    <label for="address_line1">Address Line 1</label>
+                    <input type="text" id="address_line1" name="address_line1">
+    
+                    <label for="address_line2">Address Line 2</label>
+                    <input type="text" id="address_line2" name="address_line2">
+    
+                    <label for="postal_code">Postal Code</label>
+                    <input type="number" id="postal_code" name="postal_code">
+    
+                    <label for="country">Country</label>
+                    <input type="text" id="country" name="country">
+                    <button type="submit" id="submit">Submit</button>
+                </form>
             </div>
         </div>
         <footer class="footer">
@@ -102,6 +119,6 @@ Click nbfs://nbhost/SystemFileSystem/Templates/JSP_Servlet/Html.html to edit thi
                 </div>
             </div>
         </footer>
-        <script src="javaScript/pendingOrderJS.js"></script>
+        <script src="javaScript/addressDashboardJS.js"></script>
     </body>
 </html>

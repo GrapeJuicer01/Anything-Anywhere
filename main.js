@@ -51,7 +51,11 @@ server.listen(port, () => {
 const { Schema } = mongoose;
 
 const userSchema = new Schema({
+  username: String,
+  name: String,
   email: String,
+  phone: String,
+  dob: Date,
   password: String,
 }, { 
   collection: 'users',
@@ -279,24 +283,18 @@ app.get('/api/user_address', isAuthenticated, async (req, res) => {
 // Place order
 app.post('/api/orders', isAuthenticated, async (req, res) => {
   try {
-    const { payment_method, shipping_address, orderItems } = req.body;
+    const { payment_method, shipping_address_id, orderItems } = req.body;
 
     const cartItems = await Cart.find({ user_id: req.session.userId }).populate('product_id');
     if (cartItems.length === 0) {
       return res.status(400).json({ message: 'Cart is empty' });
     }
 
-    const address = new Address({
-      user_id: req.session.userId,
-      unit_number: shipping_address.unit_number,
-      street_number: shipping_address.street_number,
-      address_line1: shipping_address.address_line1,
-      address_line2: shipping_address.address_line2,
-      city: shipping_address.city,
-      postal_code: shipping_address.postal_code,
-      country: shipping_address.country,
-    });
-    await address.save();
+    // Fetch the existing address using the provided shipping_address_id
+    const address = await Address.findOne({ _id: shipping_address_id, user_id: req.session.userId });
+    if (!address) {
+      return res.status(404).json({ message: 'Address not found' });
+    }
 
     const order = new Order({
       user_id: req.session.userId,
@@ -330,6 +328,7 @@ app.post('/api/orders', isAuthenticated, async (req, res) => {
   }
 });
 
+// User Dashboard
 // Pending Order Page
 // Fetch orders, rendering
 app.get('/api/orders', isAuthenticated, async (req, res) => {
@@ -352,6 +351,73 @@ app.get('/api/orders', isAuthenticated, async (req, res) => {
     res.status(500).json({ message: 'Error fetching orders', error: err.message });
   }
 });
+
+// Address Dashboard Page
+// User Address Current Session
+app.put('/api/user_address', isAuthenticated, async (req, res) => {
+  try {
+    const { unit_number, street_number, address_line1, address_line2, postal_code, country } = req.body;
+
+    const updatedAddress = await Address.findOneAndUpdate(
+      { user_id: req.session.userId },
+      { unit_number, street_number, address_line1, address_line2, postal_code, country },
+      { new: true, upsert: true } // Create the address if it doesn't exist
+    );
+
+    res.json(updatedAddress);
+  } catch (err) {
+    res.status(500).json({ message: 'Error updating address', error: err.message });
+  }
+});
+
+// User_dashboard Page
+// Get user info
+app.get('/api/user_info', isAuthenticated, async (req, res) => {
+  try {
+    const user = await User.findById(req.session.userId);
+    if (user) {
+      res.json(user);
+    } else {
+      res.status(404).json({ message: 'User not found' });
+    }
+  } catch (err) {
+    res.status(500).json({ message: 'Error fetching user info', error: err.message });
+  }
+});
+
+// Update User info
+app.put('/api/user_info', isAuthenticated, async (req, res) => {
+  try {
+    const { username, name, email, phone, dob } = req.body;
+    let user = await User.findById(req.session.userId);
+
+    if (user) {
+      // Update existing user info
+      user.username = username || user.username;
+      user.name = name || user.name;
+      user.email = email || user.email;
+      user.phone = phone || user.phone;
+      user.dob = dob || user.dob;
+    } else {
+      // Create new user info
+      user = new User({
+        _id: req.session.userId,
+        username,
+        name,
+        email,
+        phone,
+        dob,
+        password: '' // This is just a placeholder
+      });
+    }
+
+    await user.save();
+    res.json(user);
+  } catch (err) {
+    res.status(500).json({ message: 'Error updating user info', error: err.message });
+  }
+});
+
 
 
 // Bee Cheng Hiang Store Page Functions
