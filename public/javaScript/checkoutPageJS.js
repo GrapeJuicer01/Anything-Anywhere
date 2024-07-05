@@ -23,7 +23,7 @@ async function fetchUserAddress(userId) {
       addressContainer.innerHTML = `
         <p id="address-unit">${address.unit_number}, ${address.street_number}</p>
         <p id="address-line">${address.address_line1} ${address.address_line2}</p>
-        <p id="address-city">${address.city}, ${address.country} ${address.postal_code}</p>
+        <p id="address-city">${address.country} ${address.postal_code}</p>
       `;
     } else {
       throw new Error('Failed to fetch address');
