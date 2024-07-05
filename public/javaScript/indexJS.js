@@ -6,7 +6,7 @@
 let slideIndex = 1;
 showSlides(slideIndex);
 
-// Next/previous controls
+// Left and Right Slides Control
 function plusSlides(n) {
   showSlides(slideIndex += n);
 }
