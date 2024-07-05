@@ -13,6 +13,7 @@ async function getSessionUserId() {
     }
 }
 
+// Fetch from order collection in database through server
 async function fetchOrders() {
     try {
         const response = await fetch('/api/orders');
@@ -27,6 +28,7 @@ async function fetchOrders() {
     }
 }
 
+// Render from orders collection in database through server
 function renderOrders(orders) {
     const orderHistoryContainer = document.getElementById('pending-order');
     orderHistoryContainer.innerHTML = orders.map(order => `
@@ -52,24 +54,11 @@ function renderOrders(orders) {
     `).join('');
 }
 
+// Not implement yet
 async function confirmOrderReceived(orderId) {
-    try {
-        const response = await fetch(`/api/orders/${orderId}/confirm`, {
-            method: 'PUT',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ order_status: 'Received' })
-        });
-        if (response.ok) {
-            alert('Order status updated to Received');
-            fetchOrders(); // Refresh orders after update
-        } else {
-            throw new Error('Failed to update order status');
-        }
-    } catch (error) {
-        console.error('Error updating order status:', error);
-    }
 }
 
+// Call functions
 document.addEventListener('DOMContentLoaded', async () => {
     const userId = await getSessionUserId();
     if (userId) {

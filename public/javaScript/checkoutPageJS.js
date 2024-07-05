@@ -13,6 +13,7 @@ async function getSessionUserId() {
   }
 }
 
+// Fetch user address from server, database
 async function fetchUserAddress(userId) {
   try {
     const response = await fetch(`/api/user_address`);
@@ -32,6 +33,7 @@ async function fetchUserAddress(userId) {
   }
 }
 
+// Fetch user cart from server, database
 async function fetchCartItems(userId) {
   try {
     const response = await fetch(`/api/shopping_cart`);
@@ -46,6 +48,7 @@ async function fetchCartItems(userId) {
   }
 }
 
+// Render prodocts from carts database
 function renderCartItems(cartItems) {
   const cartItemsContainer = document.getElementById('cart-items');
   let totalPrice = 0;
@@ -70,6 +73,7 @@ function renderCartItems(cartItems) {
   document.getElementById('total-price').innerText = totalPrice.toFixed(2);
 }
 
+// Function to place product, by adding items into orders collection in the Database
 async function placeOrder() {
   try {
     const userId = await getSessionUserId();
@@ -113,7 +117,7 @@ async function placeOrder() {
   }
 }
 
-
+// Functions
 document.addEventListener('DOMContentLoaded', async () => {
   const userId = await getSessionUserId();
   if (userId) {

@@ -13,6 +13,7 @@ async function getSessionUserId() {
     }
 }
 
+// Fetch user address from user_address collection in database
 async function fetchUserAddress() {
     try {
         const response = await fetch('/api/user_address');
@@ -32,6 +33,7 @@ async function fetchUserAddress() {
     }
 }
 
+// Send data to overwrite the data into user_address collection in database
 async function updateUserAddress(event) {
     event.preventDefault();
     try {
@@ -60,6 +62,7 @@ async function updateUserAddress(event) {
     }
 }
 
+// Call functions
 document.addEventListener('DOMContentLoaded', async () => {
     const userId = await getSessionUserId();
     if (userId) {

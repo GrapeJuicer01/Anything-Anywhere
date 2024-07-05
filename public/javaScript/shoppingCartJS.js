@@ -1,5 +1,7 @@
+// Function to fetch and display items in shpping cart
 async function getCartItems() {
     try {
+        // Send a request to server to fetch items from carts collection
         const response = await fetch('/api/shopping_cart');
         const cartItems = await response.json();
         renderCartItems(cartItems);
@@ -8,6 +10,7 @@ async function getCartItems() {
     }
 }
 
+// Function to render the cart items
 function renderCartItems(cartItems) {
     const cartItemsContainer = document.getElementById('cart-items');
     cartItemsContainer.innerHTML = cartItems.map(item => `
@@ -31,20 +34,22 @@ function renderCartItems(cartItems) {
             </div>
         </div>
     `).join('');
-
+    
+    // Decrease quantity
     document.querySelectorAll('.quantity-decrease').forEach(button => {
         button.addEventListener('click', updateQuantity);
     });
-
+    // Increase Quantity
     document.querySelectorAll('.quantity-increase').forEach(button => {
         button.addEventListener('click', updateQuantity);
     });
-
+    // Delete Quantity
     document.querySelectorAll('.delete-button').forEach(button => {
         button.addEventListener('click', deleteCartItem);
     });
 }
 
+// Function to update cart item in carts collection Database
 async function updateQuantity(event) {
     const cartItem = event.target.closest('.cart-item');
     const itemId = cartItem.dataset.id;
@@ -77,6 +82,7 @@ async function updateQuantity(event) {
     }
 }
 
+// Function to delete cart item in carts collection Database
 async function deleteCartItem(event) {
     const cartItem = event.target.closest('.cart-item');
     const itemId = cartItem.dataset.id;
@@ -97,6 +103,7 @@ async function deleteCartItem(event) {
     }
 }
 
+// Function to cart summary price
 function updateCartSummary() {
     const cartItems = document.querySelectorAll('.cart-item');
     let totalItems = 0;

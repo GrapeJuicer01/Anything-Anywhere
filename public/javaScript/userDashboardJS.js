@@ -13,6 +13,7 @@ async function getSessionUserId() {
     }
 }
 
+// Fetch user data from users collection in database through server
 async function fetchUserInfo() {
     try {
         const response = await fetch('/api/user_info');
@@ -27,6 +28,7 @@ async function fetchUserInfo() {
     }
 }
 
+// Render user whatever data is available from users collection in database through server
 function renderUserInfo(user) {
     document.getElementById('username').value = user.username || '';
     document.getElementById('name').value = user.name || '';
@@ -35,6 +37,7 @@ function renderUserInfo(user) {
     document.getElementById('dob').value = user.dob ? new Date(user.dob).toISOString().split('T')[0] : '';
 }
 
+// Send data to overwrite the data into users collection in database
 async function updateUserInfo(event) {
     event.preventDefault();
     try {
@@ -70,6 +73,7 @@ async function updateUserInfo(event) {
     }
 }
 
+// Call function
 document.addEventListener('DOMContentLoaded', async () => {
     const userId = await getSessionUserId();
     if (userId) {

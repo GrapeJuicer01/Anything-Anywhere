@@ -1,8 +1,4 @@
 <!DOCTYPE html>
-<!--
-Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
-Click nbfs://nbhost/SystemFileSystem/Templates/JSP_Servlet/Html.html to edit this template
--->
 <html>
     <head>
         <title>TODO supply a title</title>
@@ -42,8 +38,10 @@ Click nbfs://nbhost/SystemFileSystem/Templates/JSP_Servlet/Html.html to edit thi
             </div>
         </div>
         <script>
+            // Function to add products to shopping cart container
             async function addToCart(productId) {
                 try {
+                    // Send a request to the server to add objects to the carts collection
                     const response = await fetch('/api/shopping_cart', {
                         method: 'POST',
                         headers: { 'Content-Type': 'application/json' },
@@ -60,10 +58,12 @@ Click nbfs://nbhost/SystemFileSystem/Templates/JSP_Servlet/Html.html to edit thi
             }
     
             document.addEventListener('DOMContentLoaded', function () {
+                // Fetch the list of products from products collection through server 
                 fetch('/api/products')
                     .then(response => response.json())
                     .then(data => {
                         const productGrid = document.getElementById('product-grid');
+                        // Populate product grid with data fetched from collection
                         productGrid.innerHTML = data.map(product => `
                             <div class="product-item">
                                 <img src="pictures/${product.image}" alt="${product.name}">

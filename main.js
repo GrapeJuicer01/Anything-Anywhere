@@ -162,14 +162,19 @@ function isAuthenticated(req, res, next) {
 }
 // User login method
 app.post('/login', async (req, res) => {
+  // Destructure email and password from formData
   const { email, password } = req.body;
-  console.log('Login attempt:', email, password); // Log login attempt
+  console.log('Login attempt:', email, password);
 
   try {
+    // Find the user in the database using user's email
     const user = await User.findOne({ email });
+    // Check user exist
     if (user) {
       console.log('User found:', user);
-      if (password === user.password) { // Compare plaintext passwords for now
+      // Compare formData password vs database password
+      // Using plaintext password comparison, plan to use hashaed password in the future
+      if (password === user.password) { 
         req.session.userId = user._id;
         console.log('Login successful');
         res.status(200).json({ message: 'User logged in' });
@@ -188,14 +193,18 @@ app.post('/login', async (req, res) => {
 });
 // Account Creation or Registration
 app.post('/register', async (req, res) => {
+  // Destructure email and password from formData object
   const { email, password } = req.body;
   console.log('Received registration request:', { email, password });
   try {
+    // Check if user exist with the provided mail 
+    // Compare using formData object email vs database email
     const existingUser = await User.findOne({ email });
     if (existingUser) {
       console.log('User already exists:', email);
       return res.status(400).json({ message: 'User already exists' });
     }
+    // Create a new user with the formData object
     const user = new User({ email, password });
     await user.save();
     console.log('User registered successfully:', email);
@@ -217,12 +226,16 @@ app.get('/api/session', (req, res) => {
 // Shopping Cart Checkout, Quantity & Deletion
 // Add to cart function
 app.post('/api/shopping_cart', isAuthenticated, async (req, res) => {
+  // Destructure product_id from request
   const { product_id } = req.body;
   try {
+    // Find a cart item in the database matching the user ID from the session and the product ID from the request body 
     let cartItem = await Cart.findOne({ user_id: req.session.userId, product_id });
     if (cartItem) {
+      // If cart item exist, increate the qty by 1
       cartItem.quantity += 1;
     } else {
+      // If cart tem does not exist, create new cart and insert item
       cartItem = new Cart({ user_id: req.session.userId, product_id });
     }
     await cartItem.save();
@@ -424,6 +437,7 @@ app.put('/api/user_info', isAuthenticated, async (req, res) => {
 // Render product from products collection
 app.get('/api/products', async (req, res) => {
   try {
+    // Getch products from shopId 1
     const products = await Product.find({ shopId: 1 }); // Example shop ID for Bee Cheng Hiang
     res.json(products);
   } catch (err) {
