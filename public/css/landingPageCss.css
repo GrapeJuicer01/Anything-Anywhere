@@ -1,0 +1,306 @@
+body{
+    font-family: 'Calibri', sans-serif;
+}
+
+*{
+    text-decoration: none;
+}
+
+.navbar{
+    list-style-type: none;
+    background-color: blue;
+    color: white;
+    text-decoration: none;
+    padding: 15px;
+}
+
+.logo{
+    height: 100px;
+    width: 100px;
+}
+
+.search-bar{
+    
+}
+
+.navbar a{
+    color: white;
+    font-size: 18px;
+    font-weight: bold;
+}
+
+.navbar li{
+    list-style: none; display: inline-block;
+    padding: 5px;
+}
+
+.navdiv{
+    display: flex; 
+    align-items: center; 
+    justify-content: space-between; 
+}
+
+* {box-sizing:border-box}
+
+/* Slideshow container */
+.slideshow-container {
+  max-width: 1000px;
+  position: relative;
+  margin: auto;
+}
+
+/* Hide the images by default */
+.mySlides {
+  display: none;
+}
+
+/* Next & previous buttons */
+.prev, .next {
+  cursor: pointer;
+  position: absolute;
+  top: 50%;
+  width: auto;
+  margin-top: -22px;
+  padding: 16px;
+  color: white;
+  font-weight: bold;
+  font-size: 18px;
+  transition: 0.6s ease;
+  border-radius: 0 3px 3px 0;
+  user-select: none;
+}
+
+/* Position the "next button" to the right */
+.next {
+  right: 0;
+  border-radius: 3px 0 0 3px;
+}
+
+/* On hover, add a black background color with a little bit see-through */
+.prev:hover, .next:hover {
+  background-color: rgba(0,0,0,0.8);
+}
+
+/* Caption text */
+.text {
+  color: #f2f2f2;
+  font-size: 15px;
+  padding: 8px 12px;
+  position: absolute;
+  bottom: 8px;
+  width: 100%;
+  text-align: center;
+}
+
+/* Number text (1/3 etc) */
+.numbertext {
+  color: #f2f2f2;
+  font-size: 12px;
+  padding: 8px 12px;
+  position: absolute;
+  top: 0;
+}
+
+/* The dots/bullets/indicators */
+.dot {
+  cursor: pointer;
+  height: 15px;
+  width: 15px;
+  margin: 0 2px;
+  background-color: #bbb;
+  border-radius: 50%;
+  display: inline-block;
+  transition: background-color 0.6s ease;
+}
+
+.active, .dot:hover {
+  background-color: #717171;
+}
+
+/* Fading animation */
+.fade {
+  animation-name: fade;
+  animation-duration: 1.5s;
+}
+
+@keyframes fade {
+  from {opacity: .4}
+  to {opacity: 1}
+}
+
+.signup-banner {
+    display: flex;
+    justify-content: center; /* Center horizontally */
+    align-items: center; /* Center vertically */
+    height: 18vh; /* Full viewport height */
+    background-color: #f0f0f0; /* Optional: Background color for the container */
+}
+
+.signup-banner {
+    background-color: #e8e8e8; /* Background color */
+    text-align: center;
+    border: none;
+    color: black;
+    font-size: 20px;
+    width: 100%; /* Width of the banner */
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); /* Optional: Add a shadow for better visual separation */
+    border-radius: 10px; /* Optional: Add rounded corners */
+}
+
+.banner-content {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.signup-button {
+    display: inline-block; /* Inline block for the button */
+    padding: 5px 30px; /* Padding */
+    color: white; /* Text color */
+    background-color: #007bff; /* Button background color */
+    border: none; /* Remove border */
+    border-radius: 5px; /* Rounded corners */
+    text-decoration: none; /* Remove underline */
+    font-size: 18px; /* Font size */
+    transition: background-color 0.3s; /* Smooth transition */
+}
+
+.signup-button:hover {
+    background-color: #0056b3; /* Change color on hover */
+}
+
+.category-section {
+    padding: 20px;
+    background-color: #f8f8f8;
+}
+
+.category-title {
+    text-align: left;
+    margin-bottom: 20px;
+    color: #333;
+}
+
+.categories {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-around;
+}
+
+.category-item {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    width: 150px;
+    margin: 10px;
+    text-align: center;
+    background: white;
+    border-radius: 10px;
+    padding: 10px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+.category-item img {
+    width: 100px;
+    height: 100px;
+    border-radius: 50%;
+    margin-bottom: 10px;
+}
+
+.category-item p {
+    margin: 0;
+    font-size: 14px;
+    color: #333;
+}
+
+.footer {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-around;
+    padding: 40px;
+    background-color: #f1f1f1;
+    color: black;
+}
+
+.footer-section {
+    flex: 1;
+    min-width: 200px;
+    margin: 10px;
+}
+
+.footer-section h3 {
+    margin-bottom: 15px;
+    color: black;
+}
+
+.footer-section ul {
+    list-style: none;
+    padding: 0;
+}
+
+.footer-section ul li {
+    margin-bottom: 10px;
+}
+
+.footer-section ul li a {
+    text-decoration: none;
+    color: black;
+    transition: color 0.3s;
+}
+
+.footer-section ul li a:hover {
+    color: #f1c40f;
+}
+
+.footer-section .payment-methods,
+.footer-section .app-download {
+    display: flex;
+    flex-wrap: wrap;
+}
+
+.footer-section .payment-methods img,
+.footer-section .app-links img {
+    margin: 5px;
+    width: 50px; /* Adjust size as needed */
+    height: auto;
+}
+
+.footer-section .social-media {
+    list-style: none;
+    padding: 0;
+}
+
+.footer-section .social-media li {
+    display: flex;
+    align-items: center;
+    margin-bottom: 10px;
+}
+
+.footer-section .social-media li img {
+    margin-right: 10px;
+    width: 20px;
+    height: auto;
+}
+
+.footer-section .app-download {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.footer-section .app-download img {
+    width: 100px; /* Adjust size as needed */
+    height: auto;
+}
+
+.footer-section .app-links {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    margin-top: 10px;
+}
+
+.footer-section .app-links img {
+    width: 100px; /* Adjust size as needed */
+    height: auto;
+    margin: 5px 0;
+}

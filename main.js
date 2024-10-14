@@ -1,13 +1,28 @@
 const express = require('express');
+const axios = require('axios');
 const mongoose = require('mongoose');
 const path = require('path');
 const session = require('express-session');
 const { log } = require('console');
 const http = require('http');
 const WebSocket = require('ws');
+const rateLimit = require('express-rate-limit');
 
 const app = express();
-const port = process.env.PORT || 3001; // Use environment variable or default to 3001
+const port = process.env.PORT || 3002; // Use environment variable or default to 3001
+const OPENAI_API_KEY = 'sk-ES8lWCC_D0gjflamGl7vALboS4jSebtjGgxy0hgDFHT3BlbkFJNIb6TLGKsCp6SXfC5xyl7cwf0tP_01_1vHkUzTYZYA';
+
+// Middleware Setup
+app.use(express.json());
+app.use(express.urlencoded({ extended: true }));
+app.use(express.static(path.join(__dirname, 'public')));
+
+// Rate limiter to limit requests from the same IP address
+const chatbotLimiter = rateLimit({
+  windowMs: 1 * 60 * 1000, // 1 minute window
+  max: 5, // Limit to 5 requests per minute per IP
+  message: 'Too many requests from this IP, please try again later.',
+});
 
 // MongoDB connection
 mongoose.connect('mongodb://localhost:27017/Anything&Anywhere')
@@ -20,8 +35,6 @@ mongoose.connect('mongodb://localhost:27017/Anything&Anywhere')
 
 // Create HTTP server
 const server = http.createServer(app);
-
-// WebSocket server
 const wss = new WebSocket.Server({ server });
 
 wss.on('connection', (ws) => {
@@ -42,7 +55,67 @@ wss.on('connection', (ws) => {
   });
 });
 
-// Start servr
+// Chatbot Route with Exponential Backoff
+app.post('/api/chatbot', chatbotLimiter, async (req, res) => {
+  const { message } = req.body;
+
+  // Exponential Backoff Function
+  async function callOpenAI(message, retries = 3, delay = 1000) {
+    try {
+      const response = await axios.post(
+        'https://api.openai.com/v1/chat/completions',
+        {
+          model: 'gpt-3.5-turbo',
+          messages: [{ role: 'user', content: message }],
+        },
+        {
+          headers: {
+            Authorization: `Bearer ${OPENAI_API_KEY}`,
+            'Content-Type': 'application/json',
+          },
+        }
+      );
+      return response.data.choices[0].message.content;
+    } catch (error) {
+      if (error.response && error.response.status === 429 && retries > 0) {
+        console.log('Rate limit hit, retrying...');
+        // Wait before retrying
+        await new Promise(resolve => setTimeout(resolve, delay));
+        // Increase delay and retry
+        return callOpenAI(message, retries - 1, delay * 2);
+      } else {
+        console.error('Error communicating with OpenAI:', error);
+        throw error;
+      }
+    }
+  }
+
+  try {
+    const reply = await callOpenAI(message);
+    res.json({ reply });
+  } catch (error) {
+    res.status(500).json({ error: 'Chatbot failed to respond' });
+  }
+});
+
+// Sample User Route
+app.get('/api/session', (req, res) => {
+  if (req.session.userId) {
+    res.json({ userId: req.session.userId });
+  } else {
+    res.status(401).json({ message: 'Not authenticated' });
+  }
+});
+
+// Serve HTML Pages
+app.get('/', (req, res) => {
+  res.sendFile(path.join(__dirname, 'public', 'index.html'));
+});
+app.get('/dashboard.html', (req, res) => {
+  res.sendFile(path.join(__dirname, 'public', 'user_dashboard.html'));
+});
+
+// Start server
 server.listen(port, () => {
   console.log(`Server running at http://localhost:${port}`);
 });
