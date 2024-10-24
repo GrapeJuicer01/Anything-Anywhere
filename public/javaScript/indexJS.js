@@ -32,17 +32,48 @@ function showSlides(n) {
   dots[slideIndex-1].className += " active";
 }
 
-document.getElementById('send-button').addEventListener('click', async () => {
-  const userInput = document.getElementById('user-input').value.trim();
-  if (!userInput) return;
+// Chatbox Logic
 
-  addMessageToChat('User', userInput);
+// Select chat icon, popup, close button, and input elements
+const chatIcon = document.getElementById('chat-icon');
+const chatPopup = document.getElementById('chat-popup');
+const closeChat = document.getElementById('close-chat');
+const sendButton = document.getElementById('send-button');
+const userInput = document.getElementById('user-input');
+const chatMessages = document.getElementById('chat-messages');
+
+// Open chat window on chat icon click
+chatIcon.addEventListener('click', () => {
+  chatPopup.style.display = 'flex';
+});
+
+// Close chat window on close button click
+closeChat.addEventListener('click', () => {
+  chatPopup.style.display = 'none';
+});
+
+// Send message when user clicks the send button
+sendButton.addEventListener('click', sendMessage);
+
+// Send message when user presses 'Enter'
+userInput.addEventListener('keypress', (e) => {
+  if (e.key === 'Enter') {
+    sendMessage();
+  }
+});
+
+// Function to send a message
+async function sendMessage() {
+  const message = userInput.value.trim();
+  if (!message) return;
+
+  addMessageToChat('User', message);
 
   try {
     const response = await fetch('/api/chatbot', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ message: userInput }),
+      body: JSON.stringify({ message }),
     });
 
     const data = await response.json();
@@ -56,11 +87,11 @@ document.getElementById('send-button').addEventListener('click', async () => {
     addMessageToChat('Chatbot', 'Chatbot is unavailable at the moment.');
   }
 
-  document.getElementById('user-input').value = '';
-});
+  userInput.value = '';
+}
 
+// Function to add messages to chat window
 function addMessageToChat(sender, message) {
-  const chatMessages = document.getElementById('chat-messages');
   const messageElement = document.createElement('div');
   messageElement.innerHTML = `<strong>${sender}:</strong> ${message}`;
   chatMessages.appendChild(messageElement);

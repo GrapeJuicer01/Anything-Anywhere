@@ -25,6 +25,7 @@
                 <li><a href="about.html">About Us</a></li>
                 <li><a href="contact.html">Contact</a></li>
                 <li><a href="login.html">Login/Register</a></li>
+                <li><a href="sellerLogin.html">Seller?</a></li>
             </ul>
         </div>
     </nav>  
@@ -152,10 +153,18 @@
         </div>
     </div> 
 
-    <div class="chatbot-container">
+    <div id="chat-icon" class="chat-icon">
+        <img src="pictures\chat_icon.png" alt="Chat Icon">
+    </div>
+
+    <div id="chat-popup" class="chat-popup">
+        <div class="chat-header">
+          <h3>Chat with Us</h3>
+          <span id="close-chat" class="close-chat">&times;</span>
+        </div>
         <div id="chat-messages" class="chat-messages"></div>
         <div class="chat-input-container">
-          <input type="text" id="user-input" placeholder="Ask me anything..." />
+          <input type="text" id="user-input" placeholder="Type a message..." />
           <button id="send-button">Send</button>
         </div>
       </div>

@@ -10,7 +10,7 @@ const rateLimit = require('express-rate-limit');
 
 const app = express();
 const port = process.env.PORT || 3002; // Use environment variable or default to 3001
-const OPENAI_API_KEY = 'sk-ES8lWCC_D0gjflamGl7vALboS4jSebtjGgxy0hgDFHT3BlbkFJNIb6TLGKsCp6SXfC5xyl7cwf0tP_01_1vHkUzTYZYA';
+const OPENAI_API_KEY = 
 
 // Middleware Setup
 app.use(express.json());
@@ -65,7 +65,7 @@ app.post('/api/chatbot', chatbotLimiter, async (req, res) => {
       const response = await axios.post(
         'https://api.openai.com/v1/chat/completions',
         {
-          model: 'gpt-3.5-turbo',
+          model: 'gpt-4-turbo',  // Correct model identifier
           messages: [{ role: 'user', content: message }],
         },
         {
@@ -79,9 +79,7 @@ app.post('/api/chatbot', chatbotLimiter, async (req, res) => {
     } catch (error) {
       if (error.response && error.response.status === 429 && retries > 0) {
         console.log('Rate limit hit, retrying...');
-        // Wait before retrying
         await new Promise(resolve => setTimeout(resolve, delay));
-        // Increase delay and retry
         return callOpenAI(message, retries - 1, delay * 2);
       } else {
         console.error('Error communicating with OpenAI:', error);
@@ -95,15 +93,6 @@ app.post('/api/chatbot', chatbotLimiter, async (req, res) => {
     res.json({ reply });
   } catch (error) {
     res.status(500).json({ error: 'Chatbot failed to respond' });
-  }
-});
-
-// Sample User Route
-app.get('/api/session', (req, res) => {
-  if (req.session.userId) {
-    res.json({ userId: req.session.userId });
-  } else {
-    res.status(401).json({ message: 'Not authenticated' });
   }
 });
 
@@ -161,6 +150,7 @@ const shopSchema = new Schema({
   name: String,
   image: String,
   category: String,
+  seller: { type: Schema.Types.ObjectId, ref: 'Seller' },
 });
 
 const orderSchema = new Schema({
@@ -203,6 +193,14 @@ const cartSchema = new Schema({
   quantity: { type: Number, default: 1 },
 });
 
+const sellerSchema = new mongoose.Schema({
+  username: { type: String, required: true },
+  email: { type: String, required: true, unique: true },
+  password: { type: String, required: true }, 
+  shopId: { type: Schema.Types.ObjectId, ref: 'Shop', required: true },
+}, { collection: 'sellers' });
+
+
 // Define models with custom collection names
 const User = mongoose.model('User', userSchema);
 const Address = mongoose.model('Address', addressSchema);
@@ -213,6 +211,7 @@ const OrderItem = mongoose.model('OrderItem', orderItemSchema);
 const Review = mongoose.model('Review', reviewSchema);
 const PaymentMethod = mongoose.model('PaymentMethod', paymentMethodSchema);
 const Cart = mongoose.model('Cart', cartSchema);
+const Seller = mongoose.model('Seller', sellerSchema);
 
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
@@ -249,6 +248,7 @@ app.post('/login', async (req, res) => {
       // Using plaintext password comparison, plan to use hashaed password in the future
       if (password === user.password) { 
         req.session.userId = user._id;
+        req.session.save;
         console.log('Login successful');
         res.status(200).json({ message: 'User logged in' });
       } else {
@@ -293,6 +293,93 @@ app.get('/api/session', (req, res) => {
     res.json({ userId: req.session.userId });
   } else {
     res.status(401).json({ message: 'Not authenticated' });
+  }
+});
+
+// Seller account management
+// Middleware to check if seller is authenticated
+function isSellerAuthenticated(req, res, next) {
+  if (req.session && req.session.sellerId) {
+    // If the seller is logged in, proceed to the next middleware or route
+    return next();
+  } else {
+    // If not authenticated, return a 401 status with an error message
+    return res.status(401).json({ message: 'Unauthorized: Seller not logged in' });
+  }
+}
+// Seller Login
+app.post('/api/sellers/login', async (req, res) => {
+  const { email, password } = req.body;
+
+  try {
+    // Find the seller by email
+    const seller = await Seller.findOne({ email });
+    if (!seller) {
+      return res.status(400).json({ message: 'Invalid email or password' });
+    }
+
+    // Check if the password matches
+    if (seller.password !== password) {
+      return res.status(400).json({ message: 'Invalid email or password' });
+    }
+
+    // Log successful login message
+    console.log(`Seller ${seller.username} logged in successfully.`);
+
+    // Set seller's session after successful login
+    req.session.sellerId = seller._id;
+    req.session.shopId = seller.shopId;
+
+    // Send success response with seller info
+    res.status(200).json({ 
+      message: 'Seller logged in successfully',
+      username: seller.username,
+      shopId: seller.shopId
+    });
+  } catch (error) {
+    console.error('Error logging in seller:', error);
+    res.status(500).json({ message: 'Error logging in', error: error.message });
+  }
+});
+// Allow seller to manage products linked to their shop
+app.post('/api/seller/products', isSellerAuthenticated, async (req, res) => {
+  const { name, description, price, quantity, image } = req.body;
+
+  try {
+    const seller = await Seller.findById(req.session.sellerId);
+    if (!seller) {
+      return res.status(404).json({ message: 'Seller not found' });
+    }
+
+    const newProduct = new Product({
+      name,
+      description,
+      price,
+      quantity,
+      image,
+      shopId: seller.shopId, // Link the product to the seller's shop
+    });
+
+    await newProduct.save();
+    res.status(201).json({ message: 'Product added successfully', product: newProduct });
+  } catch (error) {
+    console.error('Error adding product:', error);
+    res.status(500).json({ message: 'Error adding product', error: error.message });
+  }
+});
+// Fetch Seller's Products
+app.get('/api/seller/products', isSellerAuthenticated, async (req, res) => {
+  try {
+    const seller = await Seller.findById(req.session.sellerId).populate('shopId');
+    if (!seller) {
+      return res.status(404).json({ message: 'Seller not found' });
+    }
+
+    const products = await Product.find({ shopId: seller.shopId });
+    res.json(products);
+  } catch (error) {
+    console.error('Error fetching products:', error);
+    res.status(500).json({ message: 'Error fetching products', error: error.message });
   }
 });
 
@@ -503,7 +590,6 @@ app.put('/api/user_info', isAuthenticated, async (req, res) => {
     res.status(500).json({ message: 'Error updating user info', error: err.message });
   }
 });
-
 
 
 // Bee Cheng Hiang Store Page Functions
