@@ -12,7 +12,7 @@ const multer = require('multer'); // For image upload
 const app = express();
 const port = process.env.PORT || 3002; // localhost 3002
 // The API Key cant be push into GitHub, need key in yourself
-const OPENAI_API_KEY = "sk-GjZ3VJ4QCHnt5yohPAewhN1ZdE0IYFiJyi_56bltOUT3BlbkFJesp5lzo1fCogF6_qZkOaqTCuEtA9fprq5a7z-YzYEA"
+const OPENAI_API_KEY = 
 
 // Middleware Setup
 app.use(express.json());
