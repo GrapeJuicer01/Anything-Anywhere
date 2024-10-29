@@ -147,8 +147,8 @@ form input {
 }
 .footer-section .payment-methods,
 .footer-section .app-download {
-    display: flex;
-    flex-wrap: wrap;
+  display: flex;
+  flex-direction: column;
 }
 .footer-section .payment-methods img,
 .footer-section .app-links img {
@@ -183,7 +183,6 @@ form input {
 .footer-section .app-links {
     display: flex;
     flex-direction: column;
-    align-items: center;
     margin-top: 10px;
 }
 /*App Link Images*/

@@ -36,152 +36,109 @@ body{
     justify-content: space-between; 
 }
 
-/*Store Banner*/
-.banner-container {
-    background-color: #fff;
-    padding: 20px 0;
-    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-    text-align: center;
-}
-.bee-cheng-hiang-banner {
+.dashboard-container {
     display: flex;
-    flex-direction: column;
-    align-items: center;
-}
-.bee-cheng-hiang-banner img {
-    max-width: 300px; /* Adjust size as needed */
-    height: auto;
+    height: 70vh;
 }
 
-/*Product Rendering Area*/
-.product-container {
+.sidebar {
+    width: 250px;
+    background-color: #fff;
+    border-right: 1px solid #ddd;
     padding: 20px;
-    text-align: center;
-    background-color: #f8f8f8;
+    box-sizing: border-box;
 }
-.product-container h2 {
-    font-size: 24px;
+
+.sidebar p {
+    font-weight: bold;
     margin-bottom: 20px;
 }
-.product-grid {
-    display: flex;
-    flex-wrap: wrap;
-    justify-content: center;
+
+.sidebar ul {
+    list-style: none;
+    padding: 0;
 }
 
-/*Render Product Item*/
-.product-item {
-    background-color: #fff;
-    padding: 20px;
-    margin: 10px;
-    border-radius: 10px;
-    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-    text-align: center;
-    width: 200px;
+.sidebar ul li {
+    margin-bottom: 10px;
 }
-.product-item img {
-    max-width: 100%;
-    height: auto;
-    border-radius: 10px;
-}
-.product-item h3 {
-    font-size: 18px;
-    margin: 10px 0;
-}
-.product-item p {
-    font-size: 16px;
+
+.sidebar ul li a {
+    text-decoration: none;
     color: #333;
-}
-.product-item button {
-    background-color: #1634bd;
-    color: white;
-    padding: 10px 20px;
-    border: none;
+    display: block;
     border-radius: 5px;
-    cursor: pointer;
-}
-.product-item button:hover {
-    background-color: #2240c5;
+    padding: 10px;
     transition: background-color 0.3s;
 }
 
-/* Chat Icon */
-.chat-icon {
-    position: fixed;
-    bottom: 20px;
-    right: 20px;
-    cursor: pointer;
-    z-index: 1000;
-  }
-  
-  .chat-icon img {
-    width: 50px;
-    height: 50px;
-  }
-  
-  /* Chat Popup */
-  .chat-popup {
-    display: none;
-    position: fixed;
-    bottom: 80px;
-    right: 20px;
-    width: 300px;
-    height: 400px;
+.sidebar ul li a:hover,
+.sidebar ul li a.active {
+    background-color: #f0f0f0;
+}
+
+.order-item {
     background-color: white;
-    border: 1px solid #ccc;
+    margin: 20px;
+    padding: 20px;
+    margin-bottom: 20px;
     border-radius: 10px;
-    box-shadow: 0 0 15px rgba(0, 0, 0, 0.3);
-    z-index: 1000;
-    flex-direction: column;
-  }
-  
-  /* Chat Header */
-  .chat-header {
-    background-color: #1634bd;
-    color: white;
-    padding: 10px;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+}
+
+.order-item h3 {
+    margin: 0;
+    margin-bottom: 10px;
+}
+
+.order-item p {
+    margin: 0;
+    margin-bottom: 10px;
+}
+
+.order-item ul {
+    list-style: none;
+    padding: 0;
+    margin: 0;
     display: flex;
-    justify-content: space-between;
-    align-items: center;
-  }
-  
-  /* Close Button */
-  .close-chat {
-    cursor: pointer;
-    font-size: 24px;
-    font-weight: bold;
-  }
-  
-  /* Chat Messages */
-  .chat-messages {
+    flex-wrap: wrap;
+}
+
+.order-item ul li {
+    background-color: white;
     padding: 10px;
-    flex: 1;
-    overflow-y: auto;
-  }
-  
-  /* Chat Input Container */
-  .chat-input-container {
-    display: flex;
-    padding: 10px;
-    border-top: 1px solid #ccc;
-  }
-  
-  .chat-input-container input {
-    flex: 1;
-    padding: 5px;
-    border: 1px solid #ccc;
+    margin-right: 10px;
+    margin-bottom: 10px;
     border-radius: 5px;
-    margin-right: 5px;
-  }
-  
-  .chat-input-container button {
+    display: flex;
+    align-items: center;
+    flex: 1 1 calc(33% - 20px);
+    box-shadow: 0 0 5px rgba(0, 0, 0, 0.05);
+}
+
+.order-item ul li img {
+    height: 50px;
+    margin-right: 10px;
+}
+
+.order-item ul li p {
+    margin: 0;
+}
+
+.order-item button {
+    padding: 10px 20px;
     background-color: #1634bd;
     color: white;
     border: none;
-    padding: 5px 10px;
-    cursor: pointer;
     border-radius: 5px;
-  }
+    cursor: pointer;
+    transition: background-color 0.3s;
+}
+
+.order-item button:hover {
+    background-color: #2240c5;
+    transition: background-color 0.3s;
+}
 
 /* Footer */
 .footer {
@@ -262,3 +219,4 @@ body{
     height: auto;
     margin: 5px 0;
 }
+

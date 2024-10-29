@@ -97,7 +97,6 @@
 
         <script>
             // Chatbox Logic
-            // Select chat icon, popup, close button, and input elements
             const chatIcon = document.getElementById('chat-icon');
             const chatPopup = document.getElementById('chat-popup');
             const closeChat = document.getElementById('close-chat');
@@ -105,20 +104,18 @@
             const userInput = document.getElementById('user-input');
             const chatMessages = document.getElementById('chat-messages');
 
-            // Open chat window on chat icon click
+            // Open chat window
             chatIcon.addEventListener('click', () => {
             chatPopup.style.display = 'flex';
             });
 
-            // Close chat window on close button click
+            // Close chat window
             closeChat.addEventListener('click', () => {
             chatPopup.style.display = 'none';
             });
 
-            // Send message when user clicks the send button
             sendButton.addEventListener('click', sendMessage);
 
-            // Send message when user presses 'Enter'
             userInput.addEventListener('keypress', (e) => {
             if (e.key === 'Enter') {
                 sendMessage();
@@ -153,7 +150,7 @@
             userInput.value = '';
             }
 
-            // Function to add messages to chat window
+            // Function to display chat message to the window
             function addMessageToChat(sender, message) {
             const messageElement = document.createElement('div');
             messageElement.innerHTML = `<strong>${sender}:</strong> ${message}`;
@@ -197,10 +194,10 @@
             <div class="footer-section">
                 <h3>FOLLOW US</h3>
                 <ul class="social-media">
-                    <li><a href="#"><img src="images/facebook.png" alt="Facebook"> Facebook</a></li>
-                    <li><a href="#"><img src="images/instagram.png" alt="Instagram"> Instagram</a></li>
-                    <li><a href="#"><img src="images/twitter.png" alt="Twitter"> Twitter</a></li>
-                    <li><a href="#"><img src="images/linkedin.png" alt="LinkedIn"> LinkedIn</a></li>
+                    <li><a href="#"><img src="images/facebook.png" alt="Facebook"></a></li>
+                    <li><a href="#"><img src="images/instagram.png" alt="Instagram"></a></li>
+                    <li><a href="#"><img src="images/twitter.png" alt="Twitter"></a></li>
+                    <li><a href="#"><img src="images/linkedin.png" alt="LinkedIn"></a></li>
                 </ul>
             </div>
             <div class="footer-section">

@@ -36,152 +36,150 @@ body{
     justify-content: space-between; 
 }
 
-/*Store Banner*/
-.banner-container {
-    background-color: #fff;
-    padding: 20px 0;
-    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-    text-align: center;
-}
-.bee-cheng-hiang-banner {
+.dashboard-container {
     display: flex;
-    flex-direction: column;
-    align-items: center;
-}
-.bee-cheng-hiang-banner img {
-    max-width: 300px; /* Adjust size as needed */
-    height: auto;
+    height: 70vh;
 }
 
-/*Product Rendering Area*/
-.product-container {
+.sidebar {
+    width: 250px;
+    background-color: #fff;
+    border-right: 1px solid #ddd;
     padding: 20px;
-    text-align: center;
-    background-color: #f8f8f8;
+    box-sizing: border-box;
 }
-.product-container h2 {
-    font-size: 24px;
+
+.sidebar p {
+    font-weight: bold;
     margin-bottom: 20px;
+}
+
+.sidebar ul {
+    list-style: none;
+    padding: 0;
+}
+
+.sidebar ul li {
+    margin-bottom: 10px;
+}
+
+.sidebar ul li a {
+    text-decoration: none;
+    color: #333;
+    display: block;
+    border-radius: 5px;
+    padding: 10px;
+    transition: background-color 0.3s;
+}
+
+.sidebar ul li a:hover,
+.sidebar ul li a.active {
+    background-color: #f0f0f0;
+}
+
+.product-container {
+    margin: 20px;
 }
 .product-grid {
     display: flex;
     flex-wrap: wrap;
-    justify-content: center;
+    gap: 20px;
 }
-
-/*Render Product Item*/
 .product-item {
-    background-color: #fff;
-    padding: 20px;
-    margin: 10px;
-    border-radius: 10px;
-    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-    text-align: center;
+    border: 1px solid #ddd;
+    padding: 10px;
     width: 200px;
+    text-align: center;
 }
 .product-item img {
     max-width: 100%;
     height: auto;
-    border-radius: 10px;
+    margin-bottom: 10px;
 }
 .product-item h3 {
-    font-size: 18px;
-    margin: 10px 0;
+    font-size: 1.1em;
 }
 .product-item p {
-    font-size: 16px;
-    color: #333;
-}
-.product-item button {
-    background-color: #1634bd;
-    color: white;
-    padding: 10px 20px;
-    border: none;
-    border-radius: 5px;
-    cursor: pointer;
-}
-.product-item button:hover {
-    background-color: #2240c5;
-    transition: background-color 0.3s;
+    color: #666;
 }
 
-/* Chat Icon */
-.chat-icon {
-    position: fixed;
-    bottom: 20px;
-    right: 20px;
-    cursor: pointer;
-    z-index: 1000;
-  }
-  
-  .chat-icon img {
-    width: 50px;
-    height: 50px;
-  }
-  
-  /* Chat Popup */
-  .chat-popup {
+/* Container for popup */
+.popup-form-container {
     display: none;
     position: fixed;
-    bottom: 80px;
-    right: 20px;
-    width: 300px;
-    height: 400px;
-    background-color: white;
-    border: 1px solid #ccc;
-    border-radius: 10px;
-    box-shadow: 0 0 15px rgba(0, 0, 0, 0.3);
-    z-index: 1000;
-    flex-direction: column;
-  }
-  
-  /* Chat Header */
-  .chat-header {
-    background-color: #1634bd;
-    color: white;
-    padding: 10px;
-    display: flex;
-    justify-content: space-between;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.5);
+    justify-content: center;
     align-items: center;
-  }
-  
-  /* Close Button */
-  .close-chat {
+    z-index: 1000;
+}
+
+/* Styling the form box */
+.popup-form {
+    background-color: #fff;
+    padding: 50px;
+    width: 50%;
+    max-width: 400px;
+    border-radius: 8px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+    position: relative;
+    align-items: center;
+}
+
+/* Close button for modal */
+.popup-form .close {
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    font-size: 30px;
     cursor: pointer;
-    font-size: 24px;
-    font-weight: bold;
-  }
-  
-  /* Chat Messages */
-  .chat-messages {
+}
+
+/* Form elements styling */
+.popup-form h2 {
+    text-align: left;
+    margin-bottom: 20px;
+}
+
+.form-input {
+    width: 100%;
     padding: 10px;
-    flex: 1;
-    overflow-y: auto;
-  }
-  
-  /* Chat Input Container */
-  .chat-input-container {
-    display: flex;
-    padding: 10px;
-    border-top: 1px solid #ccc;
-  }
-  
-  .chat-input-container input {
-    flex: 1;
-    padding: 5px;
+    margin-bottom: 15px;
     border: 1px solid #ccc;
-    border-radius: 5px;
-    margin-right: 5px;
-  }
-  
-  .chat-input-container button {
-    background-color: #1634bd;
-    color: white;
+    border-radius: 4px;
+    font-size: 14px;
+}
+
+/* Styling for textarea to match the text inputs */
+#product-description {
+    resize: vertical;
+    height: 80px;
+}
+
+/* Submit button */
+.submit-btn {
+    width: 106%;
+    padding: 10px;
+    font-size: 14px;
+    color: #fff;
+    background-color: #333;
     border: none;
-    padding: 5px 10px;
+    border-radius: 4px;
     cursor: pointer;
-    border-radius: 5px;
-  }
+}
+
+.submit-btn:hover {
+    background-color: #555;
+}
+
+.close {
+    float: right;
+    font-size: 1.2em;
+    cursor: pointer;
+}
 
 /* Footer */
 .footer {
@@ -262,3 +260,4 @@ body{
     height: auto;
     margin: 5px 0;
 }
+

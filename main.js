@@ -7,10 +7,12 @@ const { log } = require('console');
 const http = require('http');
 const WebSocket = require('ws');
 const rateLimit = require('express-rate-limit');
+const multer = require('multer'); // For image upload
 
 const app = express();
-const port = process.env.PORT || 3002; // Use environment variable or default to 3001
-const OPENAI_API_KEY = 
+const port = process.env.PORT || 3002; // localhost 3002
+// The API Key cant be push into GitHub, need key in yourself
+const OPENAI_API_KEY = "sk-GjZ3VJ4QCHnt5yohPAewhN1ZdE0IYFiJyi_56bltOUT3BlbkFJesp5lzo1fCogF6_qZkOaqTCuEtA9fprq5a7z-YzYEA"
 
 // Middleware Setup
 app.use(express.json());
@@ -32,6 +34,18 @@ mongoose.connect('mongodb://localhost:27017/Anything&Anywhere')
 .catch(()=>{
   console.log('failed to connected');
 });
+
+// Configure Storage for Multer
+const storage = multer.diskStorage({
+  destination: (req, file, cb) => {
+    cb(null, 'public/pictures/store image/'); // Specify the folder where files will be stored
+  },
+  filename: (req, file, cb) => {
+    cb(null, Date.now() + path.extname(file.originalname));
+  }
+});
+
+const upload = multer({ storage });
 
 // Create HTTP server
 const server = http.createServer(app);
@@ -96,6 +110,8 @@ app.post('/api/chatbot', chatbotLimiter, async (req, res) => {
   }
 });
 
+// Set
+
 // Serve HTML Pages
 app.get('/', (req, res) => {
   res.sendFile(path.join(__dirname, 'public', 'index.html'));
@@ -144,6 +160,9 @@ const productSchema = new Schema({
   category: String,
   image: String,
   shopId: Number,
+}, { 
+  collection: 'products',
+  versionKey: false
 });
 
 const shopSchema = new Schema({
@@ -197,7 +216,7 @@ const sellerSchema = new mongoose.Schema({
   username: { type: String, required: true },
   email: { type: String, required: true, unique: true },
   password: { type: String, required: true }, 
-  shopId: { type: Schema.Types.ObjectId, ref: 'Shop', required: true },
+  shopId: { type: Number, required: true },
 }, { collection: 'sellers' });
 
 
@@ -304,7 +323,7 @@ function isSellerAuthenticated(req, res, next) {
     return next();
   } else {
     // If not authenticated, return a 401 status with an error message
-    return res.status(401).json({ message: 'Unauthorized: Seller not logged in' });
+    return res.status(401).json({ message: 'Error: Seller not logged in' });
   }
 }
 // Seller Login
@@ -313,7 +332,7 @@ app.post('/api/sellers/login', async (req, res) => {
 
   try {
     // Find the seller by email
-    const seller = await Seller.findOne({ email });
+    const seller = await Seller.findOne({ email }).populate('shopId');
     if (!seller) {
       return res.status(400).json({ message: 'Invalid email or password' });
     }
@@ -323,12 +342,13 @@ app.post('/api/sellers/login', async (req, res) => {
       return res.status(400).json({ message: 'Invalid email or password' });
     }
 
-    // Log successful login message
     console.log(`Seller ${seller.username} logged in successfully.`);
 
-    // Set seller's session after successful login
+    // Save session
     req.session.sellerId = seller._id;
     req.session.shopId = seller.shopId;
+
+    console.log('Session Data:', req.session);
 
     // Send success response with seller info
     res.status(200).json({ 
@@ -341,23 +361,64 @@ app.post('/api/sellers/login', async (req, res) => {
     res.status(500).json({ message: 'Error logging in', error: error.message });
   }
 });
+// Allow seller to fulfill orders
+app.get('/api/orders', async (req, res) => {
+  try {
+      const orders = await Order.find()
+          .populate('user_id', 'name') // Assuming you want to display the user's name
+          .populate('shipping_address') // Populate shipping address if needed
+          .populate({
+              path: 'orderItems.product_id', // Populate product details in orderItems
+              select: 'name image price', // Select only the fields needed for display
+          });
+      res.json(orders);
+  } catch (error) {
+      console.error('Error fetching orders:', error);
+      res.status(500).json({ message: 'Failed to fetch orders' });
+  }
+});
 // Allow seller to manage products linked to their shop
-app.post('/api/seller/products', isSellerAuthenticated, async (req, res) => {
-  const { name, description, price, quantity, image } = req.body;
+app.put('/api/products/:productId', upload.single('image'), async (req, res) => {
+  const { productId } = req.params;
+  const { name, description, price, quantity, category } = req.body;
+  const image = req.file ? req.file.path : null;
 
   try {
-    const seller = await Seller.findById(req.session.sellerId);
-    if (!seller) {
-      return res.status(404).json({ message: 'Seller not found' });
-    }
+      // Update the product in the database
+      const updatedProduct = await Product.findByIdAndUpdate(
+          productId,
+          { name, description, price, quantity, category, ...(image && { image }) },
+          { new: true }
+      );
 
+      if (!updatedProduct) {
+          return res.status(404).json({ message: 'Product not found' });
+      }
+
+      res.json({ message: 'Product updated successfully', product: updatedProduct });
+  } catch (error) {
+      console.error('Error updating product:', error);
+      res.status(500).json({ message: 'Error updating product', error: error.message });
+  }
+});
+// Allow Seller to add new products
+app.post('/api/seller/products', isSellerAuthenticated, upload.single('image'), async (req, res) => {
+  const { name, description, price, quantity, category } = req.body;
+  const imagePath = req.file ? req.file.path : null; // Store the image file path
+
+  if (!req.session.shopId) {
+    return res.status(400).json({ message: 'Wrong'})
+  }
+
+  try {
     const newProduct = new Product({
       name,
       description,
       price,
       quantity,
-      image,
-      shopId: seller.shopId, // Link the product to the seller's shop
+      category,
+      image: imagePath, // Save the image path in MongoDB
+      shopId: req.session.shopId, // Use shopId from current session
     });
 
     await newProduct.save();
@@ -365,21 +426,6 @@ app.post('/api/seller/products', isSellerAuthenticated, async (req, res) => {
   } catch (error) {
     console.error('Error adding product:', error);
     res.status(500).json({ message: 'Error adding product', error: error.message });
-  }
-});
-// Fetch Seller's Products
-app.get('/api/seller/products', isSellerAuthenticated, async (req, res) => {
-  try {
-    const seller = await Seller.findById(req.session.sellerId).populate('shopId');
-    if (!seller) {
-      return res.status(404).json({ message: 'Seller not found' });
-    }
-
-    const products = await Product.find({ shopId: seller.shopId });
-    res.json(products);
-  } catch (error) {
-    console.error('Error fetching products:', error);
-    res.status(500).json({ message: 'Error fetching products', error: error.message });
   }
 });
 
@@ -598,6 +644,7 @@ app.get('/api/products', async (req, res) => {
   try {
     // Getch products from shopId 1
     const products = await Product.find({ shopId: 1 }); // Example shop ID for Bee Cheng Hiang
+    console.log(products);
     res.json(products);
   } catch (err) {
     res.status(500).send(err);

@@ -32,6 +32,7 @@ document.addEventListener('DOMContentLoaded', () => {
             // Redirect or show success message
             console.log('Seller logged in successfully:', data);
             alert('Login successful!');
+            window.location.href = '/sellerDashboard.html';
           } else {
             alert(data.message || 'Login failed');
           }
