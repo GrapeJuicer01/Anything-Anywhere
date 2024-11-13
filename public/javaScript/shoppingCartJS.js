@@ -1,7 +1,6 @@
 // Function to fetch and display items in shpping cart
 async function getCartItems() {
     try {
-        // Send a request to server to fetch items from carts collection
         const response = await fetch('/api/shopping_cart');
         const cartItems = await response.json();
         renderCartItems(cartItems);
@@ -10,7 +9,7 @@ async function getCartItems() {
     }
 }
 
-// Function to render the cart items
+// Function to render the cart items, in HTML
 function renderCartItems(cartItems) {
     const cartItemsContainer = document.getElementById('cart-items');
     cartItemsContainer.innerHTML = cartItems.map(item => `
@@ -103,7 +102,7 @@ async function deleteCartItem(event) {
     }
 }
 
-// Function to cart summary price
+// Function to calculate cart summary price
 function updateCartSummary() {
     const cartItems = document.querySelectorAll('.cart-item');
     let totalItems = 0;

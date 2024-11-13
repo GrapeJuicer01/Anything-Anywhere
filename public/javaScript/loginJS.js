@@ -1,15 +1,13 @@
+// Function to allow login in for users (shopper)
 document.addEventListener('DOMContentLoaded', function () {
+    // fetch element from the form
     const loginForm = document.getElementById('login-form');
-    // Check if the login form exists on the page
     if (loginForm) {
         loginForm.addEventListener('submit', async function (event) {
             event.preventDefault();
-            // Create object from the loging form input
             const formData = new FormData(loginForm);
-            // Convert the formData object to JSON string
             const formDataJson = JSON.stringify(Object.fromEntries(formData));
             console.log('Submitting login form:', formDataJson); 
-            // Send a request to the server with formData
             const response = await fetch('/login', {
                 method: 'POST',
                 headers: {
@@ -17,7 +15,6 @@ document.addEventListener('DOMContentLoaded', function () {
                 },
                 body: formDataJson
             });
-            // Check if the response is successful
             if (response.ok) {
                 console.log('Login successful');
                 alert('Logged in successfully');
@@ -28,7 +25,6 @@ document.addEventListener('DOMContentLoaded', function () {
             }
         });
     } else {
-        // If no form formData is found
         console.error('Login form not found');
     }
 });

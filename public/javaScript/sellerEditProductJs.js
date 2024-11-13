@@ -36,7 +36,7 @@ function closeForm() {
 
 // Handle the form submission for updating the product
 document.getElementById('edit-product-form').addEventListener('submit', async function (event) {
-    event.preventDefault(); // Prevent the form from submitting traditionally
+    event.preventDefault(); // Prevent default form submission
 
     const productId = document.getElementById('edit-product-id').value;
     const formData = new FormData();

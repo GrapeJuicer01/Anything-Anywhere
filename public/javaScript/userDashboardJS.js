@@ -28,7 +28,7 @@ async function fetchUserInfo() {
     }
 }
 
-// Render user whatever data is available from users collection in database through server
+// FUnction render user data fromusers collection in database through server
 function renderUserInfo(user) {
     document.getElementById('username').value = user.username || '';
     document.getElementById('name').value = user.name || '';
@@ -37,7 +37,7 @@ function renderUserInfo(user) {
     document.getElementById('dob').value = user.dob ? new Date(user.dob).toISOString().split('T')[0] : '';
 }
 
-// Send data to overwrite the data into users collection in database
+// Functio to send data to overwrite the data into users collection in database
 async function updateUserInfo(event) {
     event.preventDefault();
     try {
@@ -49,7 +49,6 @@ async function updateUserInfo(event) {
             dob: document.getElementById('dob').value,
         };
 
-        // Validate that all fields are filled
         for (const key in userInfo) {
             if (userInfo[key] === '') {
                 alert('All fields must be filled out');

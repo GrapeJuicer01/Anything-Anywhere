@@ -6,16 +6,17 @@
 let slideIndex = 1;
 showSlides(slideIndex);
 
-// Left and Right Slides Control
+// Function forleft & right controls
 function plusSlides(n) {
   showSlides(slideIndex += n);
 }
 
-// Thumbnail image controls
+// Function to control navigation to a specific slide, dot selection
 function currentSlide(n) {
   showSlides(slideIndex = n);
 }
 
+// Function to display slides
 function showSlides(n) {
   let i;
   let slides = document.getElementsByClassName("mySlides");
@@ -52,17 +53,15 @@ closeChat.addEventListener('click', () => {
   chatPopup.style.display = 'none';
 });
 
-// Send message when user clicks the send button
 sendButton.addEventListener('click', sendMessage);
 
-// Send message when user presses 'Enter'
 userInput.addEventListener('keypress', (e) => {
   if (e.key === 'Enter') {
     sendMessage();
   }
 });
 
-// Function to send a message
+// Function to send a message to the API
 async function sendMessage() {
   const message = userInput.value.trim();
   if (!message) return;
@@ -90,7 +89,7 @@ async function sendMessage() {
   userInput.value = '';
 }
 
-// Function to add messages to chat window
+// Function to add messages to chat window, response from the API
 function addMessageToChat(sender, message) {
   const messageElement = document.createElement('div');
   messageElement.innerHTML = `<strong>${sender}:</strong> ${message}`;

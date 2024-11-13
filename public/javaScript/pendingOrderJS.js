@@ -28,7 +28,7 @@ async function fetchOrders() {
     }
 }
 
-// Render from orders collection in database through server
+// Render from orders collection in database through server, in HTML
 function renderOrders(orders) {
     const orderHistoryContainer = document.getElementById('pending-order');
     orderHistoryContainer.innerHTML = orders.map(order => `

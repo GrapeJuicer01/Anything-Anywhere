@@ -1,10 +1,10 @@
+// Function to add new products using the form
 document.addEventListener('DOMContentLoaded', () => {
     const addProductForm = document.getElementById('add-product-form');
 
     addProductForm.addEventListener('submit', async (event) => {
         event.preventDefault(); // Prevent default form submission
 
-        // Prepare form data for submission
         const formData = new FormData();
         formData.append('name', document.getElementById('product-name').value);
         formData.append('description', document.getElementById('product-description').value);

@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html>
     <head>
-        <title>TODO supply a title</title>
+        <title>store/beechenghiang</title>
         <meta charset="UTF-8">
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
         <link rel="stylesheet" href="css/beeChengHiangPageCss.css">
@@ -38,14 +38,18 @@
             </div>
         </div>
         <script>
-            // Function to add products to shopping cart container
+            // function to add "products" to "shopping cart"
             async function addToCart(productId) {
                 try {
-                    // Send a request to the server to add objects to the carts collection
+                    // send request to the server to add objects to the carts collection
                     const response = await fetch('/api/shopping_cart', {
                         method: 'POST',
-                        headers: { 'Content-Type': 'application/json' },
-                        body: JSON.stringify({ product_id: productId })
+                        headers: { 
+                            'Content-Type': 'application/json' 
+                        },
+                        body: JSON.stringify({ 
+                            product_id: productId 
+                        })
                     });
                     if (response.ok) {
                         alert('Product added to cart');
@@ -58,12 +62,11 @@
             }
     
             document.addEventListener('DOMContentLoaded', function () {
-                // Fetch the list of products from products collection through server 
+                // fetch bee cheng hiang products from products collection in database through main.js
                 fetch('/api/products')
                     .then(response => response.json())
                     .then(data => {
                         const productGrid = document.getElementById('product-grid');
-                        // Populate product grid with data fetched from collection
                         productGrid.innerHTML = data.map(product => `
                             <div class="product-item">
                                 <img src="pictures/${product.image}" alt="${product.name}">
@@ -96,7 +99,6 @@
         </div>
 
         <script>
-            // Chatbox Logic
             const chatIcon = document.getElementById('chat-icon');
             const chatPopup = document.getElementById('chat-popup');
             const closeChat = document.getElementById('close-chat');
@@ -104,12 +106,12 @@
             const userInput = document.getElementById('user-input');
             const chatMessages = document.getElementById('chat-messages');
 
-            // Open chat window
+            // open chat window
             chatIcon.addEventListener('click', () => {
             chatPopup.style.display = 'flex';
             });
 
-            // Close chat window
+            // close chat window
             closeChat.addEventListener('click', () => {
             chatPopup.style.display = 'none';
             });
@@ -121,33 +123,32 @@
                 sendMessage();
             }
             });
-
-            // Function to send a message
+            // function to send user message to server, then to API to get a GPT response to be displayed in the chatbox
             async function sendMessage() {
-            const message = userInput.value.trim();
-            if (!message) return;
+                const message = userInput.value.trim();
+                if (!message) return;
 
-            addMessageToChat('User', message);
+                addMessageToChat('User', message);
 
-            try {
-                const response = await fetch('/api/chatbot', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ message }),
-                });
+                try {
+                    const response = await fetch('/api/chatbot', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ message }),
+                    });
 
-                const data = await response.json();
-                if (data.reply) {
-                addMessageToChat('Chatbot', data.reply);
-                } else {
-                addMessageToChat('Chatbot', 'Sorry, something went wrong.');
+                    const data = await response.json();
+                    if (data.reply) {
+                    addMessageToChat('Chatbot', data.reply);
+                    } else {
+                    addMessageToChat('Chatbot', 'Sorry, something went wrong.');
+                    }
+                } catch (error) {
+                    console.error('Error:', error);
+                    addMessageToChat('Chatbot', 'Chatbot is unavailable at the moment.');
                 }
-            } catch (error) {
-                console.error('Error:', error);
-                addMessageToChat('Chatbot', 'Chatbot is unavailable at the moment.');
-            }
 
-            userInput.value = '';
+                userInput.value = '';
             }
 
             // Function to display chat message to the window

@@ -1,4 +1,4 @@
-// Fetch the session to get the seller's ID (assuming each seller has a unique session)
+// Function fetch the session to get the seller's session ID)
 async function getSessionUserId() {
     try {
         const response = await fetch('/api/session');
@@ -14,7 +14,7 @@ async function getSessionUserId() {
     }
 }
 
-// Fetch orders that are specifically for the seller
+// Function fetch orders that are for the session seller
 async function fetchOrders() {
     try {
         const response = await fetch('/api/orders');
@@ -29,6 +29,7 @@ async function fetchOrders() {
     }
 }
 
+// Function to render order, in HTML
 function renderOrders(orders) {
     const orderContainer = document.getElementById('incoming-order');
     orderContainer.innerHTML = orders.map(order => `
@@ -39,7 +40,7 @@ function renderOrders(orders) {
             <p>Order Status: ${order.order_status}</p>
             <h4>Shipping Address:</h4>
             <p>${order.shipping_address.unit_number}, ${order.shipping_address.street_number} ${order.shipping_address.address_line1} ${order.shipping_address.address_line2}</p>
-            <p>${order.shipping_address.city}, ${order.shipping_address.postal_code}, ${order.shipping_address.country}</p>
+            <p>${order.shipping_address.postal_code}, ${order.shipping_address.country}</p>
             <ul>
                 ${order.orderItems.map(item => `
                     <li>
@@ -59,22 +60,10 @@ function renderOrders(orders) {
 document.addEventListener('DOMContentLoaded', fetchOrders);
 
 
-// Placeholder for order confirmation functionality
+// Order Received
 async function confirmOrderReceived(orderId) {
-    try {
-        const response = await fetch(`/api/orders/${orderId}/confirm`, { method: 'PUT' });
-        if (response.ok) {
-            alert('Order confirmed as received!');
-            fetchOrders(); // Refresh the order list after confirmation
-        } else {
-            alert('Failed to confirm order');
-        }
-    } catch (error) {
-        console.error('Error confirming order:', error);
-    }
 }
 
-// Initialization
 document.addEventListener('DOMContentLoaded', async () => {
     const userId = await getSessionUserId();
     if (userId) {

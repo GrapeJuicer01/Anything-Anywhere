@@ -42,7 +42,7 @@ body{
     align-items: center;
     justify-content: space-between;
 }
-/*Promotion Banner*/
+/* Promotion Banner*/
 .promo-banner, .register-box {
     background-color: #1634bd;
     color: white;
@@ -65,7 +65,7 @@ body{
     margin: 10px 0;
     font-size: 18px;
 }
-/*Register Form*/
+/* Register Form */
 .register-box {
     display: flex;
     flex-direction: column;

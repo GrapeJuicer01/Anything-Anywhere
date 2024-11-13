@@ -164,7 +164,7 @@ body{
     color: #333;
 }
 
-/* Chat Icon */
+/* Chat Window*/
 .chat-icon {
     position: fixed;
     bottom: 20px;
@@ -194,7 +194,6 @@ body{
     flex-direction: column;
   }
   
-  /* Chat Header */
   .chat-header {
     background-color: #1634bd;
     color: white;
@@ -203,22 +202,19 @@ body{
     justify-content: space-between;
     align-items: center;
   }
-  
-  /* Close Button */
+
   .close-chat {
     cursor: pointer;
     font-size: 24px;
     font-weight: bold;
   }
   
-  /* Chat Messages */
   .chat-messages {
     padding: 10px;
     flex: 1;
     overflow-y: auto;
   }
   
-  /* Chat Input Container */
   .chat-input-container {
     display: flex;
     padding: 10px;

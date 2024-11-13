@@ -29,7 +29,6 @@ body{
     list-style: none; display: inline-block;
     padding: 5px;
 }
-/* Display Style */
 .navdiv{
     display: flex; 
     align-items: center; 
@@ -40,7 +39,7 @@ body{
     display: flex;
     height: 70vh;
 }
-
+/* Sidebar */
 .sidebar {
     width: 250px;
     background-color: #fff;
@@ -76,7 +75,7 @@ body{
 .sidebar ul li a.active {
     background-color: #f0f0f0;
 }
-
+/* Forms */
 .main-content {
     flex: 1;
     background-color: #f8f8f8;

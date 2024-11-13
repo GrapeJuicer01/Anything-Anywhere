@@ -1,3 +1,4 @@
+// Function to fetch the user's session information
 async function getSessionUserId() {
   try {
     const response = await fetch('/api/session');
@@ -13,7 +14,7 @@ async function getSessionUserId() {
   }
 }
 
-// Fetch user address from server, database
+// Function to fetch user "address" from user_address collection in database and render it
 async function fetchUserAddress(userId) {
   try {
     const response = await fetch(`/api/user_address`);
@@ -83,23 +84,26 @@ async function placeOrder() {
       return;
     }
 
+    // fetch user address and cart item to be input into the order
     const response = await fetch(`/api/user_address`);
     const address = await response.json();
 
     const cartResponse = await fetch(`/api/shopping_cart`);
     const cartItems = await cartResponse.json();
 
+    // map cart item format into the format expected for orders item
     const orderItems = cartItems.map(item => ({
       product_id: item.product_id._id,
       quantity: item.quantity,
       price: item.product_id.price
     }));
 
+    // send a request to server to place order with respective fields
     const orderResponse = await fetch('/api/orders', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({
-        payment_method: 'Credit Card', // or any method you are using
+        payment_method: 'Credit Card', 
         shipping_address_id: address._id,
         orderItems
       })
@@ -117,7 +121,7 @@ async function placeOrder() {
   }
 }
 
-// Functions
+// Initialize functions
 document.addEventListener('DOMContentLoaded', async () => {
   const userId = await getSessionUserId();
   if (userId) {

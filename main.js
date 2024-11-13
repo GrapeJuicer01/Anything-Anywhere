@@ -1,32 +1,24 @@
 const express = require('express');
-const axios = require('axios');
 const mongoose = require('mongoose');
 const path = require('path');
 const session = require('express-session');
 const { log } = require('console');
 const http = require('http');
 const WebSocket = require('ws');
-const rateLimit = require('express-rate-limit');
 const multer = require('multer'); // For image upload
 
 const app = express();
 const port = process.env.PORT || 3002; // localhost 3002
 // The API Key cant be push into GitHub, need key in yourself
-const OPENAI_API_KEY = 
+const OPENAI_API_KEY = "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";
+const ASSISTANT_ID = "asst_TRBnzVpjrJeudFoJWr5zgbwj";
 
-// Middleware Setup
+// General Middleware Setup
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use(express.static(path.join(__dirname, 'public')));
 
-// Rate limiter to limit requests from the same IP address
-const chatbotLimiter = rateLimit({
-  windowMs: 1 * 60 * 1000, // 1 minute window
-  max: 5, // Limit to 5 requests per minute per IP
-  message: 'Too many requests from this IP, please try again later.',
-});
-
-// MongoDB connection
+// MongoDB connection setup
 mongoose.connect('mongodb://localhost:27017/Anything&Anywhere')
 .then(()=>{
     console.log('mongodb connected');
@@ -35,73 +27,87 @@ mongoose.connect('mongodb://localhost:27017/Anything&Anywhere')
   console.log('failed to connected');
 });
 
-// Configure Storage for Multer
+// ====== Configure Storage For Multer And Specify The File Path. ======
+// This Is Part Of Seller Uploading Of Item
 const storage = multer.diskStorage({
   destination: (req, file, cb) => {
-    cb(null, 'public/pictures/store image/'); // Specify the folder where files will be stored
+    cb(null, 'public/pictures/store image/'); 
   },
   filename: (req, file, cb) => {
     cb(null, Date.now() + path.extname(file.originalname));
   }
 });
-
 const upload = multer({ storage });
 
-// Create HTTP server
+// Create HTTP Server And WebSocket Server, Multiple Clients Communications
 const server = http.createServer(app);
 const wss = new WebSocket.Server({ server });
-
+// a listener for new WebSocket connections
 wss.on('connection', (ws) => {
   console.log('Client connected');
-
+// a listener for Client's Message
   ws.on('message', (message) => {
     console.log(`Received: ${message}`);
-    // Broadcast the message to all clients
     wss.clients.forEach(client => {
       if (client.readyState === WebSocket.OPEN) {
         client.send(message);
       }
     });
   });
-
+// a lister for Client's disconnection
   ws.on('close', () => {
     console.log('Client disconnected');
   });
 });
 
-// Chatbot Route with Exponential Backoff
-app.post('/api/chatbot', chatbotLimiter, async (req, res) => {
+// ====== API for using OpenAI's GPT-4-turbo features ======
+app.post('/api/chatbot', async (req, res) => {
   const { message } = req.body;
 
-  // Exponential Backoff Function
   async function callOpenAI(message, retries = 3, delay = 1000) {
     try {
-      const response = await axios.post(
+      // POST response to OpenAPI endpoint using fetch
+      const response = await fetch(
         'https://api.openai.com/v1/chat/completions',
         {
-          model: 'gpt-4-turbo',  // Correct model identifier
-          messages: [{ role: 'user', content: message }],
-        },
-        {
+          method: 'POST',
           headers: {
-            Authorization: `Bearer ${OPENAI_API_KEY}`,
+            'Authorization': `Bearer ${OPENAI_API_KEY}`,
             'Content-Type': 'application/json',
           },
+          body: JSON.stringify({
+            model: 'gpt-4-turbo',
+            messages: [
+              { "role": "system", 
+                "content": "You are a knowledgeable eCommerce assistant based in Singapore. Answer all common e-commerce questions in a polite way." 
+              },
+              { "role": "user", 
+                "content": message 
+              },
+            ],
+          }),
         }
       );
-      return response.data.choices[0].message.content;
-    } catch (error) {
-      if (error.response && error.response.status === 429 && retries > 0) {
-        console.log('Rate limit hit, retrying...');
-        await new Promise(resolve => setTimeout(resolve, delay));
-        return callOpenAI(message, retries - 1, delay * 2);
-      } else {
-        console.error('Error communicating with OpenAI:', error);
-        throw error;
+
+      if (!response.ok) {
+        // retries 3 times if rate limit error, can be configured
+        if (response.status === 429 && retries > 0) {
+          console.log('Rate limit hit, retrying...');
+          await new Promise(resolve => setTimeout(resolve, delay));
+          return callOpenAI(message, retries - 1, delay * 2);
+        }
+        throw new Error(`Failed with status code ${response.status}`);
       }
+      // parse the JSON respones and return message from GPT
+      const data = await response.json();
+      return data.choices[0].message.content;
+    } catch (error) {
+      console.error('Error communicating with OpenAI:', error);
+      throw error;
     }
   }
 
+  // send the GPT response back to client
   try {
     const reply = await callOpenAI(message);
     res.json({ reply });
@@ -110,22 +116,21 @@ app.post('/api/chatbot', chatbotLimiter, async (req, res) => {
   }
 });
 
-// Set
-
 // Serve HTML Pages
 app.get('/', (req, res) => {
   res.sendFile(path.join(__dirname, 'public', 'index.html'));
 });
+// Serve This File After Logged In.
 app.get('/dashboard.html', (req, res) => {
   res.sendFile(path.join(__dirname, 'public', 'user_dashboard.html'));
 });
 
-// Start server
+// Start Server, 3002 As Configured
 server.listen(port, () => {
   console.log(`Server running at http://localhost:${port}`);
 });
 
-// Schemas
+// ====== SCHEMAS ======
 const { Schema } = mongoose;
 
 const userSchema = new Schema({
@@ -173,10 +178,10 @@ const shopSchema = new Schema({
 });
 
 const orderSchema = new Schema({
-  user_id: Schema.Types.ObjectId,
+  user_id: { type: Schema.Types.ObjectId, ref: 'User' },
   order_date: { type: Date, default: Date.now },
   payment_method: String,
-  shipping_address: Schema.Types.ObjectId,
+  shipping_address: { type: Schema.Types.ObjectId, ref: 'Address' }, // Ensure this matches the model name for `user_address`
   order_status: String,
   orderItems: [{ type: Schema.Types.ObjectId, ref: 'OrderItem' }]
 });
@@ -219,8 +224,7 @@ const sellerSchema = new mongoose.Schema({
   shopId: { type: Number, required: true },
 }, { collection: 'sellers' });
 
-
-// Define models with custom collection names
+// ====== MONGOOSE MODEL ======
 const User = mongoose.model('User', userSchema);
 const Address = mongoose.model('Address', addressSchema);
 const Product = mongoose.model('Product', productSchema);
@@ -236,14 +240,15 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use(express.static(path.join(__dirname, 'public')));
 
-// User account management
-// Session management
+// ====== USER ACCOUNT MANAGEMENT ======
+// Session Management
 app.use(session({
-  secret: 'yourSecretKey', // Change this to a secure, random string
-  resave: false,
+  secret: 'yourSecretKey', // assign random string 
+  resave: false, 
   saveUninitialized: true,
 }));
-// Middleware to check if user is logged in
+
+// Middleware function, To Verify userId To Session userId
 function isAuthenticated(req, res, next) {
   if (req.session.userId) {
     return next();
@@ -251,20 +256,20 @@ function isAuthenticated(req, res, next) {
     res.status(401).send('You need to log in first');
   }
 }
-// User login method
+
+// User Login Method
 app.post('/login', async (req, res) => {
-  // Destructure email and password from formData
+  // take email and password from formData
   const { email, password } = req.body;
   console.log('Login attempt:', email, password);
 
   try {
-    // Find the user in the database using user's email
+    // find the user in the database using user's email
     const user = await User.findOne({ email });
-    // Check user exist
     if (user) {
       console.log('User found:', user);
-      // Compare formData password vs database password
-      // Using plaintext password comparison, plan to use hashaed password in the future
+      // compare formData password vs database password
+      // using plaintext password comparison, plan to use hashed password in the future
       if (password === user.password) { 
         req.session.userId = user._id;
         req.session.save;
@@ -283,20 +288,21 @@ app.post('/login', async (req, res) => {
     res.status(500).json({ message: 'Error logging in', error: err.message });
   }
 });
+
 // Account Creation or Registration
 app.post('/register', async (req, res) => {
-  // Destructure email and password from formData object
+  // take email and password from formData object
   const { email, password } = req.body;
   console.log('Received registration request:', { email, password });
   try {
-    // Check if user exist with the provided mail 
-    // Compare using formData object email vs database email
+    // check if user exist with the provided mail 
+    // compare using formData object email vs database email
     const existingUser = await User.findOne({ email });
     if (existingUser) {
       console.log('User already exists:', email);
       return res.status(400).json({ message: 'User already exists' });
     }
-    // Create a new user with the formData object
+    // create a new user with the formData object, (email, password)
     const user = new User({ email, password });
     await user.save();
     console.log('User registered successfully:', email);
@@ -305,9 +311,10 @@ app.post('/register', async (req, res) => {
     res.status(500).json({ message: 'Error registering user', error: err.message });
   }
 });
+
 // Endpoint to get session info
 app.get('/api/session', (req, res) => {
-  console.log('Session User ID:', req.session.userId); // Debugging statement
+  console.log('Session User ID:', req.session.userId);
   if (req.session.userId) {
     res.json({ userId: req.session.userId });
   } else {
@@ -315,42 +322,37 @@ app.get('/api/session', (req, res) => {
   }
 });
 
-// Seller account management
-// Middleware to check if seller is authenticated
+// ====== SELLER ACCOUNT MANAGEMENT ======
+// Middleware Function, To Verify sellerId
 function isSellerAuthenticated(req, res, next) {
   if (req.session && req.session.sellerId) {
-    // If the seller is logged in, proceed to the next middleware or route
     return next();
   } else {
-    // If not authenticated, return a 401 status with an error message
     return res.status(401).json({ message: 'Error: Seller not logged in' });
   }
 }
-// Seller Login
+
+// Seller Login Method
 app.post('/api/sellers/login', async (req, res) => {
+  // take email and password from formData
   const { email, password } = req.body;
 
   try {
-    // Find the seller by email
+    // find the seller in the database using seller's email
     const seller = await Seller.findOne({ email }).populate('shopId');
     if (!seller) {
       return res.status(400).json({ message: 'Invalid email or password' });
     }
-
-    // Check if the password matches
+    // compare formData password vs database password
+    // using plaintext password comparison, plan to use hashed password in the future
     if (seller.password !== password) {
       return res.status(400).json({ message: 'Invalid email or password' });
     }
-
     console.log(`Seller ${seller.username} logged in successfully.`);
-
-    // Save session
     req.session.sellerId = seller._id;
     req.session.shopId = seller.shopId;
-
     console.log('Session Data:', req.session);
 
-    // Send success response with seller info
     res.status(200).json({ 
       message: 'Seller logged in successfully',
       username: seller.username,
@@ -361,30 +363,35 @@ app.post('/api/sellers/login', async (req, res) => {
     res.status(500).json({ message: 'Error logging in', error: error.message });
   }
 });
-// Allow seller to fulfill orders
-app.get('/api/orders', async (req, res) => {
+// ====== SELLER ORDER MANAGEMENT ======
+// Seller View Orders
+app.get('/api/seller/orders', async (req, res) => {
   try {
-      const orders = await Order.find()
-          .populate('user_id', 'name') // Assuming you want to display the user's name
-          .populate('shipping_address') // Populate shipping address if needed
-          .populate({
-              path: 'orderItems.product_id', // Populate product details in orderItems
-              select: 'name image price', // Select only the fields needed for display
-          });
-      res.json(orders);
+    const orders = await Order.find()
+      .populate('shipping_address')
+      .populate('user_id', 'name')
+      .populate({
+        path: 'orderItems.product_id',
+        select: 'name image price',
+      });
+    res.json(orders);
   } catch (error) {
-      console.error('Error fetching orders:', error);
-      res.status(500).json({ message: 'Failed to fetch orders' });
+    res.status(500).json({ message: 'Failed to fetch orders' });
   }
 });
-// Allow seller to manage products linked to their shop
+
+// ====== SELLER PRODUCT MANAGEMENT ======
+// Seller Product Update
 app.put('/api/products/:productId', upload.single('image'), async (req, res) => {
+  // creates a productId
   const { productId } = req.params;
+  // take data from the form
   const { name, description, price, quantity, category } = req.body;
+  // file path is according to multer configuration
   const image = req.file ? req.file.path : null;
 
   try {
-      // Update the product in the database
+      // update data in the database by the productId
       const updatedProduct = await Product.findByIdAndUpdate(
           productId,
           { name, description, price, quantity, category, ...(image && { image }) },
@@ -401,7 +408,8 @@ app.put('/api/products/:productId', upload.single('image'), async (req, res) => 
       res.status(500).json({ message: 'Error updating product', error: error.message });
   }
 });
-// Allow Seller to add new products
+
+// Seller Addition Of Products
 app.post('/api/seller/products', isSellerAuthenticated, upload.single('image'), async (req, res) => {
   const { name, description, price, quantity, category } = req.body;
   const imagePath = req.file ? req.file.path : null; // Store the image file path
@@ -429,19 +437,18 @@ app.post('/api/seller/products', isSellerAuthenticated, upload.single('image'), 
   }
 });
 
-// Shopping Cart Checkout, Quantity & Deletion
-// Add to cart function
+// ====== SHOPPING CART FUNCTIONS ======
+// Add Products To Cart Endpoint
 app.post('/api/shopping_cart', isAuthenticated, async (req, res) => {
-  // Destructure product_id from request
   const { product_id } = req.body;
   try {
-    // Find a cart item in the database matching the user ID from the session and the product ID from the request body 
+    // searches for an existing cart that matches the user_id, it is to restore previous session 
     let cartItem = await Cart.findOne({ user_id: req.session.userId, product_id });
     if (cartItem) {
-      // If cart item exist, increate the qty by 1
+      // if cart item exist, increase the qty by 1
       cartItem.quantity += 1;
     } else {
-      // If cart tem does not exist, create new cart and insert item
+      // if cart tem does not exist, create new cart and insert item
       cartItem = new Cart({ user_id: req.session.userId, product_id });
     }
     await cartItem.save();
@@ -450,7 +457,8 @@ app.post('/api/shopping_cart', isAuthenticated, async (req, res) => {
     res.status(500).json({ error: err.message });
   }
 });
-// Delete item from the cart
+
+// Delete Item From The Cart Endpoint
 app.delete('/api/shopping_cart/:id', isAuthenticated, async (req, res) => {
   try {
     await Cart.findByIdAndDelete(req.params.id);
@@ -459,10 +467,12 @@ app.delete('/api/shopping_cart/:id', isAuthenticated, async (req, res) => {
     res.status(500).json({ error: err.message });
   }
 });
-// Update quantity of item in the cart
+
+// Update Quantity Of Item In The Cart Endpoint
 app.put('/api/shopping_cart/:id', isAuthenticated, async (req, res) => {
   const { quantity } = req.body;
   try {
+    // searches for an existing cart that matches the user_id, it is to restore previous session
     const cartItem = await Cart.findById(req.params.id);
     if (cartItem) {
       cartItem.quantity = quantity;
@@ -475,7 +485,8 @@ app.put('/api/shopping_cart/:id', isAuthenticated, async (req, res) => {
     res.status(500).json({ error: err.message });
   }
 });
-// Render shopping cart products from shopping_cart
+
+// Render Shopping Cart Products From shopping_cart Endpoint
 app.get('/api/shopping_cart', isAuthenticated, async (req, res) => {
   try {
     const cartItems = await Cart.find({ user_id: req.session.userId }).populate('product_id');
@@ -485,10 +496,11 @@ app.get('/api/shopping_cart', isAuthenticated, async (req, res) => {
   }
 });
 
-// Checkout Page
-// Fetch user address, rendering
+// ====== CHECKOUT PAGE ======
+// Fetch Uer Address, Rendering
 app.get('/api/user_address', isAuthenticated, async (req, res) => {
   try {
+    // search the address to the current session userId
     const address = await Address.findOne({ user_id: req.session.userId });
     if (address) {
       res.json(address);
@@ -499,7 +511,8 @@ app.get('/api/user_address', isAuthenticated, async (req, res) => {
     res.status(500).json({ message: 'Error fetching user address', error: err.message });
   }
 });
-// Place order
+
+// Place Order
 app.post('/api/orders', isAuthenticated, async (req, res) => {
   try {
     const { payment_method, shipping_address_id, orderItems } = req.body;
@@ -509,12 +522,12 @@ app.post('/api/orders', isAuthenticated, async (req, res) => {
       return res.status(400).json({ message: 'Cart is empty' });
     }
 
-    // Fetch the existing address using the provided shipping_address_id
     const address = await Address.findOne({ _id: shipping_address_id, user_id: req.session.userId });
     if (!address) {
       return res.status(404).json({ message: 'Address not found' });
     }
 
+    // create a new order object and set its fields, then save into the database
     const order = new Order({
       user_id: req.session.userId,
       order_date: new Date(),
@@ -532,7 +545,8 @@ app.post('/api/orders', isAuthenticated, async (req, res) => {
       quantity: item.quantity,
       price: item.product_id.price,
     }));
-
+    
+    // bulk inject the new order object into "OrderItem" collection in MongoDb
     const createdOrderItems = await OrderItem.insertMany(orderItemsData);
     order.orderItems = createdOrderItems.map(item => item._id);
     await order.save();
@@ -547,11 +561,12 @@ app.post('/api/orders', isAuthenticated, async (req, res) => {
   }
 });
 
-// User Dashboard
-// Pending Order Page
-// Fetch orders, rendering
+// ====== USER DASHBOARD ======
+// Pending Order Page 
+// Rendering of orderitems
 app.get('/api/orders', isAuthenticated, async (req, res) => {
   try {
+    // fetch orders that is associated to the current session userId, and populate the fields
     const orders = await Order.find({ user_id: req.session.userId })
       .populate('shipping_address')
       .populate({
@@ -578,9 +593,17 @@ app.put('/api/user_address', isAuthenticated, async (req, res) => {
     const { unit_number, street_number, address_line1, address_line2, postal_code, country } = req.body;
 
     const updatedAddress = await Address.findOneAndUpdate(
-      { user_id: req.session.userId },
-      { unit_number, street_number, address_line1, address_line2, postal_code, country },
-      { new: true, upsert: true } // Create the address if it doesn't exist
+      { 
+        user_id: req.session.userId 
+      },
+      { 
+        unit_number, 
+        street_number, 
+        address_line1, 
+        address_line2, 
+        postal_code, 
+        country 
+      },
     );
 
     res.json(updatedAddress);
@@ -589,8 +612,8 @@ app.put('/api/user_address', isAuthenticated, async (req, res) => {
   }
 });
 
-// User_dashboard Page
-// Get user info
+// User Dashboard Page
+// Get User Info
 app.get('/api/user_info', isAuthenticated, async (req, res) => {
   try {
     const user = await User.findById(req.session.userId);
@@ -611,14 +634,12 @@ app.put('/api/user_info', isAuthenticated, async (req, res) => {
     let user = await User.findById(req.session.userId);
 
     if (user) {
-      // Update existing user info
       user.username = username || user.username;
       user.name = name || user.name;
       user.email = email || user.email;
       user.phone = phone || user.phone;
       user.dob = dob || user.dob;
     } else {
-      // Create new user info
       user = new User({
         _id: req.session.userId,
         username,
@@ -626,7 +647,7 @@ app.put('/api/user_info', isAuthenticated, async (req, res) => {
         email,
         phone,
         dob,
-        password: '' // This is just a placeholder
+        password: '' // this is just a placeholder
       });
     }
 
@@ -637,8 +658,7 @@ app.put('/api/user_info', isAuthenticated, async (req, res) => {
   }
 });
 
-
-// Bee Cheng Hiang Store Page Functions
+// ====== BEE CHENG HIANG STORE ======
 // Render product from products collection
 app.get('/api/products', async (req, res) => {
   try {
@@ -650,7 +670,6 @@ app.get('/api/products', async (req, res) => {
     res.status(500).send(err);
   }
 });
-
 
 // Serve the HTML file
 app.get('/', (req, res) => {
